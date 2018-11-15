@@ -3,13 +3,14 @@
 
 #include "camera.h"
 
-#include <string>
+#include <vector>
 
 namespace RayTracer {
 
 class Scene {
-	public:
-		Scene(std::string config_file, std::string scene_file);
+	private:
+		std::vector<Camera> cameras;
+		std::vector<Object> objects;
 };
 
 }
