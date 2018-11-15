@@ -7,9 +7,18 @@
 namespace RayTracer {
 
 class Entity {
-	Scene& scene;
-	Vec3 position;
-	Vec3 angle;
+	private:
+		Scene& scene;
+		Vec3 position;
+		Vec3 angle;
+	public:
+		Entity(const Scene& scene, const Vec3& position, const Vec3& angle);
+		void setScene(const Scene& scene);
+		void setPosition(const Vec3& position);
+		void setAngle(const Vec3& angle);
+		Scene& getScene();
+		Vec3 getPosition();
+		Vec3 getAngle();
 };
 
 }
