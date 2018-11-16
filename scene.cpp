@@ -1,16 +1,13 @@
 #include "scene.h"
 
-Scene::Scene(std::vector<Camera> _cameras, std::vector<Object> _objects) {
-	this->cameras = _cameras;
-	this->objects = _objects;
-}
-
 void Scene::addCamera(const Camera& _camera) {
 	this->cameras.push_back(_camera);
+	_camera.setScene(*this);
 }
 
 void Scene::addObject(const Object& object) {
 	this->objects.push_back(object);
+	_object.setScene(*this);
 }
 
 std::vector<Camera>& Scene::getCameras() {

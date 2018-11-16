@@ -1,6 +1,6 @@
 #include "camera.h"
 
-Camera::Camera(const Scene& _scene, const Vec3& _position, const Vec3& _angle, CameraSensor _cameraSensor) {
+Camera::Camera(const Scene* _scene, const Vec3& _position, const Vec3& _angle, CameraSensor _cameraSensor) {
 	capturedImage = ImageData();
 	setCameraSensor(_cameraSensor);
 }
@@ -26,4 +26,9 @@ void Camera::captureImage() {
 
 ImageData& Camera::getCapturedImage() {
 	return &capturedImage;
+}
+
+void Camera::setScene(const Scene* _scene) {
+	Entity::setScene(_scene);
+	cameraSensor.setScene(_scene);
 }

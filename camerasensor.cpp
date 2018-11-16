@@ -1,3 +1,6 @@
 #include "camerasensor.h"
 
-CameraSensor::CameraSensor
+void CameraSensor::setScene(const *Scene _scene) {
+	RayGenerator::setScene(_scene);
+	surface.setScene(_scene);
+}

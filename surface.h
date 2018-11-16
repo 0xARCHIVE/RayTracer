@@ -12,9 +12,9 @@ class Surface : public Entity, public RayInteractable {
 	protected:
 		std::function<ColorData(const Vec3&)> colorDataFunc;
 	public:
-		Surface(const Scene& _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays) : Entity(_scene, _position, _angle) : RayInteractable(_canIntersectRays, _canGenerateRays);
-		virtual Vec3 getIntersectionPoint(const Ray& _r) = 0;
+		Surface(const Scene* _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays);
 		ColorData getColorData(const Vec3& _position);
+		virtual Vec3 getIntersectionPoint(const Ray& _r) = 0;
 		virtual Vec3 getHitNorm(const Vec3& _position) = 0;
 };
 

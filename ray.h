@@ -10,7 +10,7 @@ class Ray : public RayGenerator {
 		ColorData colorData;
 		int life_left;
 	public:
-		Ray(const Scene& _scene, const Vec3& _position, const Vec3& _angle, int _life_left, const ColorData _colorData) : RayGenerator(_scene);
+		Ray(const Scene* _scene, const Vec3& _position, const Vec3& _angle, int _life_left, const ColorData _colorData);
 		Vec3 computeResult();
 };
 

@@ -15,11 +15,12 @@ class Object : public Entity {
 		BoundingBox boundingBox;
 		std::vector<Surface> surfaces;
 	public:
-		Object(const Scene& _scene, const Vec3& _position, const Vec3& _angle, BoundingBox _boundingBox) : Entity(_scene, _position, _angle);
+		Object(const Scene* _scene, const Vec3& _position, const Vec3& _angle, BoundingBox _boundingBox);
 		void addSurface(Surface _surface);
 		std::vector<Surface> getSurfaces();
 		void setBoundingBox(BoundingBox _boundingBox);
 		BoundingBox& getBoundingBox();
+		virtual void setScene(const Scene* _scene);
 };
 
 }

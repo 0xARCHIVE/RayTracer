@@ -1,9 +1,13 @@
 #include "scene.h"
+#include "object.h"
+#include "boundingbox.h"
 
 #include <iostream>
 
 int main() {
-	RayTracer::Scene scene("config.cfg","scene.dat");
-	std::cout << "test" << std::endl;
+	BoundingBox bb();
+//	std::vector<Camera> cameras;
+//	std::vector<Objects> objects;
+//	RayTracer::Scene scene(cameras,objects);
 	return 0;
 }

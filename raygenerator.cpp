@@ -1,5 +1,7 @@
 #include "raygenerator.h"
 
+RayGenerator::RayGenerator(const Scene* _scene) : Entity(_scene, Vec3(0,0,0), Vec3(0,0,0) {}
+
 Ray RayGenerator::generateRay(const Vec3& _position, const Vec3& _direction, int _life_left, const ColorData& _colorData) {
 	return generateRays(_position, _direction, _life_left, _colorData, 0, 1).front();
 }

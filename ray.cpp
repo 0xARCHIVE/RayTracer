@@ -1,10 +1,13 @@
 #include "ray.h"
 
-Ray::Ray(const Scene& _scene, const Vec3& _position, const Vec3& _angle, int _life_left, const ColorData _colorData) {
+Ray::Ray(const Scene* _scene, const Vec3& _position, const Vec3& _angle, int _life_left, const ColorData _colorData) : RayGenerator(_scene) {
 	life_left = _life_left;
 }
 
 Vec3 Ray::computeResult() {
+	// need to be in a scene
+	if (scene == nullptr) { return Vec3(0,0,0); }
+
 	// if no life left, we're done
 	// ask scene for intersection
 	// 	if none, we're done
