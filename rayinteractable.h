@@ -4,16 +4,18 @@
 #include "intersectdata.h"
 #include "ray.h"
 
+#include <experimental/optional>
+
 namespace RayTracer {
 
 class RayInteractable {
 	protected:
-		bool canIntersectRays = false;
-		bool canGenerateRays = false;
+		bool flag_canIntersectRays = false;
+		bool flag_canGenerateRays = false;
 	public:
 		RayInteractable();
 		RayInteractable(bool _canIntersectRays, bool _canGenerateRays);
-		virtual IntersectData intersect(const Ray& _r) = 0;
+		virtual std::experimental::optional<IntersectData> intersect(const Ray& _r) = 0;
 		bool canIntersectRays();
 		bool canGenerateRays();
 		void setIntersectRays(bool _canIntersectRays);

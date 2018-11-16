@@ -12,12 +12,12 @@ class Camera : public Entity {
 		CameraSensor cameraSensor;
 		ImageData capturedImage;
 	public:
-		Camera(const Scene* _scene, const Vec3& _position, const Vec3& _angle, CameraSensor _cameraSensor) : Entity(_scene, _position, _angle);
+		Camera(Scene * const _scene, const Vec3& _position, const Vec3& _angle, CameraSensor _cameraSensor);
 		void setCameraSensor(CameraSensor _cameraSensor);
-		cameraSensor& getCameraSensor();
+		CameraSensor& getCameraSensor();
 		void captureImage();
 		ImageData& getCapturedImage();
-		virtual void setScene(const Scene* _scene);
+		virtual void setScene(Scene * const _scene);
 };
 
 }

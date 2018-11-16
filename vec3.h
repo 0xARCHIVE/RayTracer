@@ -22,10 +22,12 @@ class Vec3 {
 		void setY(float y);
 		void setZ(float z);
 
-		float length();
-		float dot(const Vec3 &v);
-		Vec3 cross(const Vec3 &v);
-		Vec3 hadamard(const Vec3 &v);
+		float length() const;
+		float dot(const Vec3 &v) const;
+		Vec3 cross(const Vec3 &v) const;
+		Vec3 hadamard(const Vec3 &v) const;
+		Vec3 normalised() const;
+		Vec3 angleToDirection() const;
 };
 
 Vec3 &operator+=(Vec3 &ls, const Vec3 &rhs);

@@ -1,6 +1,7 @@
 # Declaration of variables
 CC = g++
-CC_FLAGS = -Wall -Werror -Wextra -std=c++11
+#CC_FLAGS = -Wall -Werror -Wextra -std=c++17
+CC_FLAGS = -Wall -Wextra -std=c++17
 
 # File names
 EXEC = raytracer

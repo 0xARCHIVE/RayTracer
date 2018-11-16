@@ -1,24 +1,28 @@
 #include "rayinteractable.h"
 
+namespace RayTracer {
+
 RayInteractable::RayInteractable() {}
 
 RayInteractable::RayInteractable(bool _canIntersectRays, bool _canGenerateRays) {
-	setIntersectRays(canIntersectRays);
-	setGenerateRays(canGenerateRays);
+	setIntersectRays(_canIntersectRays);
+	setGenerateRays(_canGenerateRays);
 }
 
 bool RayInteractable::canIntersectRays() {
-	return canIntersectRays;
+	return flag_canIntersectRays;
 }
 
 bool RayInteractable::canGenerateRays() {
-	return canGenerateRays();
+	return flag_canGenerateRays;
 }
 
-void setIntersectRays(bool _canIntersectRays) {
-	canIntersectRays = _canIntersectRays;
+void RayInteractable::setIntersectRays(bool _canIntersectRays) {
+	flag_canIntersectRays = _canIntersectRays;
 }
 
-void setGenerateRays(bool _canGenerateRays) {
-	canGenerateRays = _canGenerateRays;
+void RayInteractable::setGenerateRays(bool _canGenerateRays) {
+	flag_canGenerateRays = _canGenerateRays;
+}
+
 }

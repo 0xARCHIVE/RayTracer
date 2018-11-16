@@ -1,11 +1,14 @@
 #include "entity.h"
 
-Entity::Entity(const Scene* _scene, const Vec3& _position, const Vec3& _angle) {
-	Entity(_position,_angle);
+namespace RayTracer {
+
+Entity::Entity(Scene * const _scene, const Vec3& _position, const Vec3& _angle) {
+	setPosition(_position);
+	setAngle(_angle);
 	setScene(_scene);
 }
 
-void Entity::setScene(const Scene* _scene) {
+void Entity::setScene(Scene * const _scene) {
 	scene = _scene;
 }
 
@@ -17,14 +20,16 @@ void Entity::setAngle(const Vec3& _angle) {
 	angle = _angle;
 }
 
-Scene* Entity::getScene() {
+Scene* Entity::getScene() const {
 	return scene;
 }
 
-Vec3 Entity::getPosition() {
+Vec3 Entity::getPosition() const {
 	return position;
 }
 
-Vec3 Entity::getAngle() {
+Vec3 Entity::getAngle() const {
 	return angle;
+}
+
 }

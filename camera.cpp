@@ -1,7 +1,8 @@
 #include "camera.h"
 
-Camera::Camera(const Scene* _scene, const Vec3& _position, const Vec3& _angle, CameraSensor _cameraSensor) {
-	capturedImage = ImageData();
+namespace RayTracer {
+
+Camera::Camera(Scene * const _scene, const Vec3& _position, const Vec3& _angle, CameraSensor _cameraSensor) : Entity(_scene, _position, _angle) {
 	setCameraSensor(_cameraSensor);
 }
 
@@ -11,8 +12,8 @@ void Camera::setCameraSensor(CameraSensor _cameraSensor) {
 	capturedImage.resolution_y = cameraSensor.resolutionY();
 }
 
-cameraSensor& Camera::getCameraSensor() {
-	return &cameraSensor;
+CameraSensor& Camera::getCameraSensor() {
+	return cameraSensor;
 }
 
 void Camera::captureImage() {
@@ -25,10 +26,12 @@ void Camera::captureImage() {
 }
 
 ImageData& Camera::getCapturedImage() {
-	return &capturedImage;
+	return capturedImage;
 }
 
-void Camera::setScene(const Scene* _scene) {
+void Camera::setScene(Scene * const _scene) {
 	Entity::setScene(_scene);
 	cameraSensor.setScene(_scene);
+}
+
 }
