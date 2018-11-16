@@ -11,15 +11,15 @@
 namespace RayTracer {
 
 class Object : public Entity {
-	private:
+	protected:
 		BoundingBox boundingBox;
 		std::vector<Surface> surfaces;
 	public:
-		Object(const Scene& scene, const Vec3& position, const Vec3& angle, BoundingBox boundingBox);
-		void addSurface(Surface surface);
+		Object(const Scene& _scene, const Vec3& _position, const Vec3& _angle, BoundingBox _boundingBox) : Entity(_scene, _position, _angle);
+		void addSurface(Surface _surface);
 		std::vector<Surface> getSurfaces();
-		void setBoundingBox(BoundingBox boundingBox);
-		BoundingBox getBoundingBox();
+		void setBoundingBox(BoundingBox _boundingBox);
+		BoundingBox& getBoundingBox();
 };
 
 }

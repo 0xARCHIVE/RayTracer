@@ -7,15 +7,17 @@
 namespace RayTracer {
 
 class RayInteractable {
-	private:
-		bool flag_canIntersectRays;
-		bool flag_canGenerateRays;
+	protected:
+		bool canIntersectRays = false;
+		bool canGenerateRays = false;
 	public:
-		virtual IntersectData intersect(const Ray& r) = 0;
+		RayInteractable();
+		RayInteractable(bool _canIntersectRays, bool _canGenerateRays);
+		virtual IntersectData intersect(const Ray& _r) = 0;
 		bool canIntersectRays();
 		bool canGenerateRays();
-		void setIntersectRays(bool flag);
-		void setGenerateRays(bool flag);
+		void setIntersectRays(bool _canIntersectRays);
+		void setGenerateRays(bool _canGenerateRays);
 };
 
 }

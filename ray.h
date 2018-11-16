@@ -6,10 +6,11 @@
 namespace RayTracer {
 
 class Ray : public RayGenerator {
-	private:
+	protected:
 		ColorData colorData;
+		int life_left;
 	public:
-		Ray(const Scene& scene, const Vec3& position, const Vec3& angle, int life_left, const ColorData colorData);
+		Ray(const Scene& _scene, const Vec3& _position, const Vec3& _angle, int _life_left, const ColorData _colorData) : RayGenerator(_scene);
 		Vec3 computeResult();
 };
 

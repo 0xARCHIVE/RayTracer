@@ -2,20 +2,21 @@
 #define CAMERA_H
 
 #include "entity.h"
+#include "imagedata.h"
 #include "camerasensor.h"
 
 namespace RayTracer {
 
 class Camera : public Entity {
-	private:
+	protected:
 		CameraSensor cameraSensor;
-		std::vector<Vec3> capturedImage;
+		ImageData capturedImage;
 	public:
-		Camera(const Scene& scene, const Vec3& position, const Vec3& angle, CameraSensor cameraSensor);
-		void setCameraSensor(CameraSensor cameraSensor);
+		Camera(const Scene& _scene, const Vec3& _position, const Vec3& _angle, CameraSensor _cameraSensor) : Entity(_scene, _position, _angle);
+		void setCameraSensor(CameraSensor _cameraSensor);
 		cameraSensor& getCameraSensor();
 		void captureImage();
-		std::vector<Vec3>& getCapturedImage();
+		ImageData& getCapturedImage();
 };
 
 }

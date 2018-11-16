@@ -8,8 +8,8 @@
 namespace RayTracer {
 
 struct IntersectData {
-	Surface * surface;
-	ColorData * colorData;
+	Surface& surface;
+	ColorData& colorData;
 	Vec3 hitPos;
 	Vec3 surfaceNorm;
 };
