@@ -3,6 +3,7 @@
 
 #include "surface.h"
 #include "raygenerator.h"
+#include "surface.h"
 
 namespace RayTracer {
 

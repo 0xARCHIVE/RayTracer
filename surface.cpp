@@ -4,7 +4,17 @@
 namespace RayTracer {
 
 Surface::Surface(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays) : Entity(_scene, _position, _angle) , RayInteractable(_canIntersectRays, _canGenerateRays) {
-	colorDataFunc = [](const Vec3& _position) -> ColorData { ColorData colorData; return colorData; };	// return default ColorData
+	ColorData colorData;
+	colorData.color = Vec3(0,0,0);
+	setColorData(colorData);
+}
+
+void Surface::setColorData(const ColorData& _colorData) {
+	colorDataFunc = [=](const Vec3& _position) -> ColorData { return _colorData; };
+}
+
+void Surface::setColorData(std::function<ColorData(const Vec3&)> _colorDataFunc) {
+	colorDataFunc = _colorDataFunc;
 }
 
 ColorData Surface::getColorData(const Vec3& _position) {

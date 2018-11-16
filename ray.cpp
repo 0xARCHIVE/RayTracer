@@ -6,7 +6,12 @@
 
 namespace RayTracer {
 
+Ray::Ray(Scene * const _scene, const Vec3& _position, const Vec3& _direction, int _life_left) : RayGenerator(_scene, _position, _direction) {
+	life_left = _life_left;
+}
+
 Ray::Ray(Scene * const _scene, const Vec3& _position, const Vec3& _direction, int _life_left, ColorData _colorData) : RayGenerator(_scene, _position, _direction) {
+	colorData = _colorData;
 	life_left = _life_left;
 }
 

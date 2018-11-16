@@ -13,7 +13,8 @@ class Plane : public Surface {
 	public:
 		Plane(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays);
 		std::experimental::optional<Vec3> getIntersectionPoint(const Ray& _r);
-		std::experimental::optional<Vec3> getHitNorm(const Vec3& _position);
+		std::experimental::optional<Vec3> getHitNorm(const Vec3& _point);
+		float distToPlane(const Vec3& _point) const;
 		bool isPointInPlane(const Vec3& _point) const;
 };
 

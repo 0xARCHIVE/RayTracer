@@ -11,6 +11,7 @@ class Ray : public RayGenerator {
 		ColorData colorData;
 		int life_left;
 	public:
+		Ray(Scene * const _scene, const Vec3& _position, const Vec3& _direction, int _life_left);
 		Ray(Scene * const _scene, const Vec3& _position, const Vec3& _direction, int _life_left, ColorData _colorData);
 		Vec3 computeResult();
 		Vec3 getDirection() const;
