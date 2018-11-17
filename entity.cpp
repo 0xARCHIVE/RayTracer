@@ -87,9 +87,24 @@ std::vector<Entity*> Entity::getChildren() {
 	return children;
 }
 
-void Entity::addChild(Entity * const _child) {
+void Entity::addChild(Entity * const _child, bool dontCallAgain) {
 	if (_child == nullptr) { return; }
+	if (_child->hasParent()) { return; }
+
 	children.push_back(_child);
+
+	if (dontCallAgain) { return; }	// prevents looping
+	_child->setParent(this, true);
+}
+
+void Entity::setParent(Entity * const _parent, bool dontCallAgain) {
+	if (hasParent()) { return; }
+	if (_parent == nullptr) { return; }
+
+	parent = _parent;
+
+	if (dontCallAgain) { return; }	// prevents looping
+	_parent->addChild(this, true);
 }
 
 Vec3 Entity::up() const {

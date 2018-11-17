@@ -38,8 +38,8 @@ class Entity {
 		Entity * getParent();
 		bool hasChildren();
 		std::vector<Entity*> getChildren();
-		void addChild(Entity * const _child);
-		void addParent(Entity * const _parent);
+		void addChild(Entity * const _child, bool dontCallAgain = false);
+		void setParent(Entity * const _parent, bool dontCallAgain = false);
 
 		Vec3 up() const;
 		Vec3 forward() const;

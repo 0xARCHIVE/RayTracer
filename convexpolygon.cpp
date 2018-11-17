@@ -2,9 +2,7 @@
 
 namespace RayTracer {
 
-ConvexPolygon::ConvexPolygon(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays) : Surface(_scene, _position, _angle, _canIntersectRays, _canGenerateRays) {
-
-}
+ConvexPolygon::ConvexPolygon(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays) : Surface(_scene, _position, _angle, _canIntersectRays, _canGenerateRays) {}
 
 std::experimental::optional<Vec3> ConvexPolygon::getIntersectionPoint(const Ray& _r) {
 	std::experimental::optional<IntersectData> _intersectDataOpt = getIntersectData(_r);
@@ -38,6 +36,7 @@ std::experimental::optional<IntersectData> ConvexPolygon::intersect(const Ray& _
 void ConvexPolygon::addPlane(Plane * const _plane) {
 	if (_plane == nullptr) { return; }
 	planes.push_back(_plane);
+	addChild(_plane);
 }
 
 std::vector<Plane *> ConvexPolygon::getPlanes() {
