@@ -11,10 +11,10 @@ Box::Box(Scene* const _scene, const Vec3& _position, const Vec3& _angle, const V
 	float width = _dimensions.getY();
 	float height = _dimensions.getZ();
 
-	Plane * p1 = new Plane(_scene, _position + forward()*(depth/2), _angle + Vec3(90,0,0), _canIntersectRays, _canGenerateRays);
-	Plane * p2 = new Plane(_scene, _position - forward()*(depth/2), _angle + Vec3(-90,0,0), _canIntersectRays, _canGenerateRays);
-	Plane * p3 = new Plane(_scene, _position + right()*(width/2), _angle + Vec3(0,0,90), _canIntersectRays, _canGenerateRays);
-	Plane * p4 = new Plane(_scene, _position - right()*(width/2), _angle + Vec3(0,0,-90), _canIntersectRays, _canGenerateRays);
+	Plane * p1 = new Plane(_scene, _position + forward()*(depth/2), _angle + Vec3(-90,0,0), _canIntersectRays, _canGenerateRays);
+	Plane * p2 = new Plane(_scene, _position - forward()*(depth/2), _angle + Vec3(90,0,0), _canIntersectRays, _canGenerateRays);
+	Plane * p3 = new Plane(_scene, _position + right()*(width/2), _angle + Vec3(0,0,-90), _canIntersectRays, _canGenerateRays);
+	Plane * p4 = new Plane(_scene, _position - right()*(width/2), _angle + Vec3(0,0,90), _canIntersectRays, _canGenerateRays);
 	Plane * p5 = new Plane(_scene, _position + up()*(height/2), _angle, _canIntersectRays, _canGenerateRays);
 	Plane * p6 = new Plane(_scene, _position - up()*(height/2), _angle + Vec3(0,0,180), _canIntersectRays, _canGenerateRays);
 

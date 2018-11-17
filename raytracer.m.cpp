@@ -17,13 +17,10 @@ int main() {
 	BoundingBox bb(&scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(10,20,5));
 //	Object obj(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb);
 
-	bb.setPosition(Vec3(10,0,0));
-	bb.rotate(Vec3(45,90,0));
-	bb.setAngle(Vec3(0,0,0));
-	std::cout << bb.getAngle() << std::endl;
+//	bb.setPosition(Vec3(10,0,0));
 	std::vector<Plane *> planes = bb.getPlanes();
 	for (auto plane : planes) {
-		std::cout << plane->getPosition() << std::endl;
+		std::cout << plane->getPosition() << " | " << plane->getNorm() << std::endl;
 	}
 
 	ColorData colorData;
