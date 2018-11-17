@@ -91,6 +91,27 @@ Vec3 Vec3::directionToAngle() const {
 	return Vec3(pitch,yaw,roll);
 }
 
+Vec3 Vec3::rotate(const Vec3& _angle) const {
+	// https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
+	// TODO: make a matrix library
+
+	float _pitch = -1*_angle.getX()*(M_PI/180);
+	float _yaw = _angle.getZ()*(M_PI/180);
+	float _roll = _angle.getY()*(M_PI/180);
+
+	float _x = getX();
+	float _y = getY();
+	float _z = getZ();
+
+	Vec3 result(0,0,0);
+
+	result.setX( _x*(cos(_pitch)*cos(_roll)) + _y*(-cos(_yaw)*sin(_roll) + sin(_yaw)*sin(_pitch)*cos(_roll)) + _z*(sin(_yaw)*sin(_roll) + cos(_yaw)*sin(_pitch)*cos(_roll)) );
+	result.setY( _x*(cos(_pitch)*sin(_roll)) + _y*(cos(_yaw)*cos(_roll) + sin(_yaw)*sin(_pitch)*sin(_roll)) + _z*(-sin(_yaw)*cos(_roll) + cos(_yaw)*sin(_pitch)*sin(_roll)) );
+	result.setZ( _x*(-sin(_pitch)) + _y*(sin(_yaw)*cos(_pitch)) + _z*(cos(_yaw)*cos(_pitch)) );
+
+	return result;
+}
+
 Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs) {
 	lhs = lhs + rhs;
 	return lhs;

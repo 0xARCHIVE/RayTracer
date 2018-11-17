@@ -9,8 +9,6 @@
 namespace RayTracer {
 
 class Plane : public Surface {
-	protected:
-		Vec3 norm;
 	public:
 		Plane(Scene * const _scene, const Vec3& _norm, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays);
 		std::experimental::optional<Vec3> getIntersectionPoint(const Ray& _r);

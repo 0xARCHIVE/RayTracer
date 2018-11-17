@@ -7,9 +7,7 @@
 
 namespace RayTracer {
 
-Plane::Plane(Scene * const _scene, const Vec3& _position, const Vec3& _norm, bool _canIntersectRays, bool _canGenerateRays) : Surface(_scene, _position, Vec3(0,0,0), _canIntersectRays, _canGenerateRays) {
-	norm = _norm.normalised();
-}
+Plane::Plane(Scene * const _scene, const Vec3& _position, const Vec3& _norm, bool _canIntersectRays, bool _canGenerateRays) : Surface(_scene, _position, _norm, _canIntersectRays, _canGenerateRays) {}
 
 std::experimental::optional<Vec3> Plane::getIntersectionPoint(const Ray& _r) {
 	Vec3 _point = _r.getPosition();
@@ -97,7 +95,7 @@ bool Plane::isPointInPlane(const Vec3& _point) const {
 }
 
 Vec3 Plane::getNorm() {
-	return norm;
+	return getAngle();
 }
 
 }
