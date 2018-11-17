@@ -9,6 +9,7 @@ Object::Object(Scene * const _scene, const Vec3& _position, const Vec3& _angle, 
 void Object::addSurface(Surface * const _surface) {
 	if (_surface == nullptr) { return; }
 	surfaces.push_back(_surface);
+	addChild(_surface);
 }
 
 std::vector<Surface *>& Object::getSurfaces() {
@@ -18,6 +19,7 @@ std::vector<Surface *>& Object::getSurfaces() {
 void Object::setBoundingBox(BoundingBox * const _boundingBox) {
 	if (_boundingBox == nullptr) { return; }
 	boundingBox = _boundingBox;
+	addChild(_boundingBox);
 }
 
 BoundingBox * Object::getBoundingBox() {

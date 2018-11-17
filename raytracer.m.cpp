@@ -14,8 +14,17 @@ using namespace RayTracer;
 int main() {
 	Scene scene;
 
-//	BoundingBox bb(&scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(10,20,5));
+	BoundingBox bb(&scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(10,20,5));
 //	Object obj(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb);
+
+	bb.setPosition(Vec3(10,0,0));
+	bb.rotate(Vec3(45,90,0));
+	bb.setAngle(Vec3(0,0,0));
+	std::cout << bb.getAngle() << std::endl;
+	std::vector<Plane *> planes = bb.getPlanes();
+	for (auto plane : planes) {
+		std::cout << plane->getPosition() << std::endl;
+	}
 
 	ColorData colorData;
 	colorData.color = Vec3(1,1,1);
@@ -28,7 +37,7 @@ int main() {
 
 	CameraSensor sensor(&scene, &surface, 10, 10, 1);
 	Camera cam(&scene, &sensor);
-	cam.captureImage();
+//	cam.captureImage();
 
 	return 0;
 }
