@@ -7,3 +7,5 @@ Box::Box(Scene* const _scene, const Vec3& _position, const Vec3& _angle, const V
 
 	// todo: create planes and setup ConvexPolygon
 }
+
+}

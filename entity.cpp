@@ -49,7 +49,7 @@ void Entity::translate(const Vec3& _vector) {
 }
 
 void Entity::rotate(const Vec3& _angle) {
-	setAngle(getAngle() + _angle));
+	setAngle(getAngle() + _angle);
 }
 
 void Entity::translateChildrenBy(const Vec3& _vector) {
@@ -74,7 +74,7 @@ bool Entity::hasParent() {
 	return true;
 }
 
-Entity* Entity:getParent() {
+Entity* Entity::getParent() {
 	return parent;
 }
 
@@ -87,20 +87,20 @@ std::vector<Entity*> Entity::getChildren() {
 	return children;
 }
 
-void Entity:addChild(Entity * const _child) {
+void Entity::addChild(Entity * const _child) {
 	if (_child == nullptr) { return; }
 	children.push_back(_child);
 }
 
-Vec3 Entity::up() {
+Vec3 Entity::up() const {
 	return localZ;
 }
 
-Vec3 Entity::forward() {
+Vec3 Entity::forward() const {
 	return localX;
 }
 
-Vec3 Entity::right() {
+Vec3 Entity::right() const {
 	return localY;
 }
 

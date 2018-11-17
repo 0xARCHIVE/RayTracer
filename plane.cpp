@@ -7,13 +7,29 @@
 
 namespace RayTracer {
 
-Plane::Plane(Scene * const _scene, const Vec3& _position, const Vec3& _norm, bool _canIntersectRays, bool _canGenerateRays) : Surface(_scene, _position, _norm, _canIntersectRays, _canGenerateRays) {}
+Plane::Plane(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays) : Surface(_scene, _position, _angle, _canIntersectRays, _canGenerateRays) {}
+
+std::experimental::optional<IntersectData> Plane::intersect(const Ray& _r) {
+	return getIntersectData(_r);
+}
+
+std::experimental::optional<IntersectData> Plane::getIntersectData(const Ray& _r) {
+	std::experimental::optional<Vec3> _intersectPointOpt = getIntersectionPoint(_r);
+	if (!_intersectPointOpt) { return std::experimental::nullopt; }
+
+	IntersectData _intersectData;
+	_intersectData.surface = this;
+	_intersectData.hitPos = _intersectPointOpt.value();
+	_intersectData.hitNorm = getNorm();
+
+	return std::experimental::optional<IntersectData>(_intersectData);
+}
 
 std::experimental::optional<Vec3> Plane::getIntersectionPoint(const Ray& _r) {
 	Vec3 _point = _r.getPosition();
 	Vec3 _direction = _r.getDirection();
 	float numerator = signedDistToPlane(_point);
-	float denominator = _direction.dot(norm);
+	float denominator = _direction.dot(getNorm());
 	if (denominator == 0) {
 		// ray is parallel to plane
 		if (abs(numerator) <= GLOBAL_SETTING_RAY_PRECISION) {
@@ -28,16 +44,20 @@ std::experimental::optional<Vec3> Plane::getIntersectionPoint(const Ray& _r) {
 }
 
 std::experimental::optional<Vec3> Plane::getHitNorm(const Vec3& _point) {
-	if (isPointInPlane(_point)) { return std::experimental::optional<Vec3>(norm); }
+	if (isPointInPlane(_point)) { return std::experimental::optional<Vec3>(getNorm()); }
 	return std::experimental::nullopt;
 }
 
 std::vector<Vec3> Plane::getBasisVectors(float u, float v) {
-	auto nonzero_sign = [](float _x) {
+	return std::vector<Vec3>{forward(),right()};
+
+/*	auto nonzero_sign = [](float _x) {
 		if (_x > 0) return 1;
 		if (_x < 0) return -1;
 		return 1;
 	};
+
+	Vec3 norm = getNorm();
 
 	Vec3 s;
 	Vec3 t;
@@ -67,6 +87,7 @@ std::vector<Vec3> Plane::getBasisVectors(float u, float v) {
 	}
 
 	return std::vector<Vec3>{t.normalised(),s.normalised()};
+*/
 }
 
 Vec3 Plane::getPointOnSurface(float u, float v) {
@@ -80,7 +101,7 @@ float Plane::distToPlane(const Vec3& _point) const {
 }
 
 float Plane::signedDistToPlane(const Vec3& _point) const {
-	return (getPosition() - _point).dot(norm);
+	return (getPosition() - _point).dot(getNorm());
 }
 
 bool Plane::isPointInsidePlane(const Vec3& _point) const {
@@ -94,8 +115,8 @@ bool Plane::isPointInPlane(const Vec3& _point) const {
 	return false;
 }
 
-Vec3 Plane::getNorm() {
-	return getAngle();
+Vec3 Plane::getNorm() const {
+	return up();
 }
 
 }

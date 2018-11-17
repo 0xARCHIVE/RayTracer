@@ -3,7 +3,7 @@
 
 namespace RayTracer {
 
-Camera::Camera(Scene * const _scene, CameraSensor * const _cameraSensor) : Entity(_scene, Vec(0,0,0), Vec(0,0,0)) {
+Camera::Camera(Scene * const _scene, CameraSensor * const _cameraSensor) : Entity(_scene, Vec3(0,0,0), Vec3(0,0,0)) {
 	setCameraSensor(_cameraSensor);
 }
 

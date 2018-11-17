@@ -1,5 +1,7 @@
 #include "convexpolygon.h"
 
+namespace RayTracer {
+
 ConvexPolygon::ConvexPolygon(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays) : Surface(_scene, _position, _angle, _canIntersectRays, _canGenerateRays) {
 
 }
@@ -20,7 +22,7 @@ std::experimental::optional<Vec3> ConvexPolygon::getHitNorm(const Vec3& _positio
 }
 
 std::vector<Vec3> ConvexPolygon::getBasisVectors(float u, float v) {
-	return Vec3(0,0,0);
+	return std::vector<Vec3>{Vec3(0,0,0)};
 }
 
 Vec3 ConvexPolygon::getPointOnSurface(float u, float v) {
@@ -43,7 +45,7 @@ std::vector<Plane *> ConvexPolygon::getPlanes() {
 }
 
 bool ConvexPolygon::isPointInsideShape(const Vec3& _point) {
-	for (auto plane : getPlanes) {
+	for (auto plane : getPlanes()) {
 		if (!plane->isPointInsidePlane(_point)) { return false; }
 	}
 	return true;
@@ -78,4 +80,6 @@ std::experimental::optional<IntersectData> ConvexPolygon::getIntersectData(const
 	}
 
 	return std::experimental::nullopt;
+}
+
 }

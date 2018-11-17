@@ -23,10 +23,10 @@ int main() {
 	colorData.reflectivity = 1;
 	colorData.transmissivity = 0;
 
-	Plane surface(&scene, Vec3(0,0,0), Vec3(1,1,1), false, true);
+	Plane surface(&scene, Vec3(0,0,0), Vec3(45,0,0), false, true);
 	surface.setColorData(colorData);
-	CameraSensor sensor(&scene, &surface, 10, 10, 1);
 
+	CameraSensor sensor(&scene, &surface, 10, 10, 1);
 	Camera cam(&scene, &sensor);
 	cam.captureImage();
 

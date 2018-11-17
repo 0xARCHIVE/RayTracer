@@ -28,11 +28,8 @@ std::experimental::optional<IntersectData> Surface::intersect(const Ray& _r) {
 	std::experimental::optional<Vec3> hitNorm = getHitNorm(hitPos.value());
 	if (!hitNorm) { return std::experimental::nullopt; }
 
-	ColorData colorData = getColorData(hitPos.value());
-
 	IntersectData intersectData;
 	intersectData.surface = this;
-	intersectData.colorData = colorData;
 	intersectData.hitPos = hitPos.value();
 	intersectData.hitNorm = hitNorm.value();
 

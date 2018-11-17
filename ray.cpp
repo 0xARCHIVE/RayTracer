@@ -39,9 +39,9 @@ Vec3 Ray::computeResult() {
 		std::experimental::optional<IntersectData> intersectData = scene->getIntersectData(*(this));
 		if (!intersectData) { return Vec3(0,0,0); }	// didn't hit anything
 
-		ColorData _colorData = intersectData.value().colorData;
 		Vec3 _hitPos = intersectData.value().hitPos;
 		Vec3 _hitNorm = intersectData.value().hitNorm;
+		ColorData _colorData = intersectData.value().surface->getColorData(_hitPos);
 
 		ColorData _colorData_reflected = _colorData;
 		_colorData_reflected.multiplier = _colorData.reflectivity;
