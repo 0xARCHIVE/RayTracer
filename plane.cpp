@@ -87,13 +87,17 @@ float Plane::signedDistToPlane(const Vec3& _point) const {
 
 bool Plane::isPointInsidePlane(const Vec3& _point) const {
 	// "inside" plane if it's on the opposite side to the outward pointing norm
-	if (signedDistToPlane(_point) >= 0) { return true; }
+	if (signedDistToPlane(_point) >= -GLOBAL_SETTING_RAY_PRECISION) { return true; }
 	return false;
 }
 
 bool Plane::isPointInPlane(const Vec3& _point) const {
 	if (distToPlane(_point) <= GLOBAL_SETTING_RAY_PRECISION) { return true; }
 	return false;
+}
+
+Vec3 Plane::getNorm() {
+	return norm;
 }
 
 }
