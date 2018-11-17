@@ -78,7 +78,7 @@ Vec3 Plane::getPointOnSurface(float u, float v) {
 }
 
 float Plane::distToPlane(const Vec3& _point) const {
-	return abs(distToPlane(_point));
+	return abs(signedDistToPlane(_point));
 }
 
 float Plane::signedDistToPlane(const Vec3& _point) const {
@@ -97,3 +97,4 @@ bool Plane::isPointInPlane(const Vec3& _point) const {
 }
 
 }
+
