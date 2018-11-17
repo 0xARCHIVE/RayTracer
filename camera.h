@@ -9,12 +9,12 @@ namespace RayTracer {
 
 class Camera : public Entity {
 	protected:
-		CameraSensor cameraSensor;
+		CameraSensor * cameraSensor;
 		ImageData capturedImage;
 	public:
-		Camera(Scene * const _scene, const Vec3& _position, const Vec3& _angle, CameraSensor _cameraSensor);
-		void setCameraSensor(CameraSensor _cameraSensor);
-		CameraSensor& getCameraSensor();
+		Camera(Scene * const _scene, const Vec3& _position, const Vec3& _angle, CameraSensor * const _cameraSensor);
+		void setCameraSensor(CameraSensor * const _cameraSensor);
+		CameraSensor * getCameraSensor();
 		void captureImage();
 		ImageData& getCapturedImage();
 		virtual void setScene(Scene * const _scene);

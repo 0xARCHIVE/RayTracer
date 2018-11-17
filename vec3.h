@@ -28,6 +28,7 @@ class Vec3 {
 		Vec3 hadamard(const Vec3 &v) const;
 		Vec3 normalised() const;
 		Vec3 angleToDirection() const;
+		Vec3 directionToAngle() const;
 };
 
 Vec3 &operator+=(Vec3 &ls, const Vec3 &rhs);

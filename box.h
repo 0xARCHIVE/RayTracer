@@ -1,7 +1,7 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "surface.h"
+#include "convexpolygon.h"
 #include "ray.h"
 #include "vec3.h"
 
@@ -9,13 +9,11 @@
 
 namespace RayTracer {
 
-class Box : public Surface {
+class Box : public ConvexPolygon {
 	protected:
 		Vec3 dimensions;
 	public:
 		Box(Scene * const _scene, const Vec3& _position, const Vec3& _angle, const Vec3& _dimensions, bool _canIntersectRays, bool _canGenerateRays);
-		std::experimental::optional<Vec3> getIntersectionPoint(const Ray& _r);
-		std::experimental::optional<Vec3> getHitNorm(const Vec3& _position);
 };
 
 }

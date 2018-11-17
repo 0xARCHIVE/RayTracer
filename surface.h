@@ -23,6 +23,8 @@ class Surface : public Entity, public RayInteractable {
 		void setColorData(std::function<ColorData(const Vec3&)> _colorDataFunc);
 		virtual std::experimental::optional<Vec3> getIntersectionPoint(const Ray& _r) = 0;
 		virtual std::experimental::optional<Vec3> getHitNorm(const Vec3& _position) = 0;
+		virtual std::vector<Vec3> getBasisVectors(float u, float v) = 0;
+		virtual Vec3 getPointOnSurface(float u, float v) = 0;
 		std::experimental::optional<IntersectData> intersect(const Ray& _r);
 };
 

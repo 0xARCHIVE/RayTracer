@@ -1,6 +1,8 @@
+#define _USE_MATH_DEFINES
+
 #include "vec3.h"
 
-#include <cmath>
+#include "math.h"
 
 namespace RayTracer {
 
@@ -70,9 +72,23 @@ Vec3 Vec3::normalised() const {
 }
 
 Vec3 Vec3::angleToDirection() const {
-	float alpha = getX();
-	float beta = getY();
+	float alpha = getX()*(M_PI/180);
+	float beta = getY()*(M_PI/180);
 	return Vec3(cos(alpha)*cos(beta), sin(alpha)*cos(beta), sin(beta)).normalised();
+}
+
+Vec3 Vec3::directionToAngle() const {
+	if (length() == 0) { return Vec3(0,0,0); }
+
+	float x = getX();
+	float y = getY();
+	float z = getZ();
+
+	float pitch = (180/M_PI)*acos(z/length());
+	float yaw = (180/M_PI)*atan2(y,x);
+	float roll = 0;
+
+	return Vec3(pitch,yaw,roll);
 }
 
 Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs) {

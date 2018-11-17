@@ -29,6 +29,7 @@ void Scene::captureImages() {
 }
 
 std::experimental::optional<IntersectData> Scene::getIntersectData(const Ray& _r) {
+	// TODO - boundingbox intersection tests and KD tree optimisation
 	return std::experimental::nullopt;
 }
 
