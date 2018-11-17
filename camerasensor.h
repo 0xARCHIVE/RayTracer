@@ -15,7 +15,7 @@ class CameraSensor : public RayGenerator {
 		float sensor_dpi;
 	public:
 		CameraSensor();
-		CameraSensor(Scene * const _scene, const Vec3& _position, const Vec3& _angle, Surface * const _surface, int _resolution_x, int _resolution_y, float _sensor_dpi);
+		CameraSensor(Scene * const _scene, Surface * const _surface, int _resolution_x, int _resolution_y, float _sensor_dpi);
 		Vec3 getPixelPosition(int _x, int _y);	// returns world position of pixel (x,y) on the sensor
 		Vec3 captureImageData(int _x, int _y);	// returns (R,G,B) capture result from pixel (x,y)
 		int resolutionX();

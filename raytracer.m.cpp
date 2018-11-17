@@ -14,19 +14,20 @@ using namespace RayTracer;
 int main() {
 	Scene scene;
 
-	BoundingBox bb(&scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(10,20,5));
-	Object obj(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb);
+//	BoundingBox bb(&scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(10,20,5));
+//	Object obj(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb);
 
 	ColorData colorData;
 	colorData.color = Vec3(1,1,1);
 	colorData.emissivity = 0;
-	colorData.multiplier = 1;
+	colorData.reflectivity = 1;
+	colorData.transmissivity = 0;
 
 	Plane surface(&scene, Vec3(0,0,0), Vec3(1,1,1), false, true);
 	surface.setColorData(colorData);
-	CameraSensor sensor(&scene, Vec3(0,0,0), Vec3(0,0,0), &surface, 10, 10, 1);
+	CameraSensor sensor(&scene, &surface, 10, 10, 1);
 
-	Camera cam(&scene, Vec3(0,0,0), Vec3(0,0,0), &sensor);
+	Camera cam(&scene, &sensor);
 	cam.captureImage();
 
 	return 0;

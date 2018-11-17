@@ -5,7 +5,7 @@ namespace RayTracer {
 
 CameraSensor::CameraSensor() : RayGenerator(nullptr) {}
 
-CameraSensor::CameraSensor(Scene * const _scene, const Vec3& _position, const Vec3& _angle, Surface * const _surface, int _resolution_x, int _resolution_y, float _sensor_dpi) : RayGenerator(_scene) {
+CameraSensor::CameraSensor(Scene * const _scene, Surface * const _surface, int _resolution_x, int _resolution_y, float _sensor_dpi) : RayGenerator(_scene) {
 	setSurface(_surface);
 	setDPI(_sensor_dpi);
 	setResolution(_resolution_x, _resolution_y);
