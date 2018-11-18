@@ -117,6 +117,7 @@ Vec3 Vec3::rotate(const Vec3& _angle) const {
 Matrix3 Vec3::getTransformationMatrix(const Vec3& _target) const {
 	// https://math.stackexchange.com/a/476311/221755
 	// get rotation matrix for this to rotate onto _target
+	// todo: implement
 	return Matrix3();
 }
 
