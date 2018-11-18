@@ -20,8 +20,8 @@ class Entity {
 		Vec3 localY;
 		Vec3 localZ;
 
-		void translateChildrenBy(const Vec3& _vector);
-		void rotateChildrenBy(const Vec3& _angle);
+		void translateChildrenTo(const Vec3& _vector);
+		void rotateChildrenTo(const Vec3& _angle);
 	public:
 		Entity(Scene * const _scene, const Vec3& _position, const Vec3& _angle);
 		virtual void setScene(Scene * const _scene);

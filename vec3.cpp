@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 
 #include "vec3.h"
+#include "matrix3.h"
 
 #include "math.h"
 
@@ -72,44 +73,51 @@ Vec3 Vec3::normalised() const {
 }
 
 Vec3 Vec3::angleToDirection() const {
-	float alpha = getX()*(M_PI/180);
-	float beta = getY()*(M_PI/180);
-	return Vec3(cos(alpha)*cos(beta), sin(alpha)*cos(beta), sin(beta)).normalised();
+	Vec3 result(0,0,1);	// angle of (0,0,0)
+	return result.rotate(*this);
 }
 
 Vec3 Vec3::directionToAngle() const {
 	if (length() == 0) { return Vec3(0,0,0); }
 
-	float x = getX();
-	float y = getY();
-	float z = getZ();
+	Vec3 _normalised = normalised();
 
-	float pitch = (180/M_PI)*acos(z/length());
-	float yaw = (180/M_PI)*atan2(y,x);
-	float roll = 0;
+	float x = _normalised.getX();
+	float y = _normalised.getY();
+	float z = _normalised.getZ();
+
+	float pitch = -(180/M_PI)*atan2(x,z);
+	float roll = (180/M_PI)*atan2(y,(sqrt(pow(x,2)+pow(z,2))));
+//	float pitch = (180/M_PI)*acos(z);
+//	float yaw = (180/M_PI)*atan2(y,x);
+	float yaw = 0;
 
 	return Vec3(pitch,yaw,roll);
 }
 
 Vec3 Vec3::rotate(const Vec3& _angle) const {
 	// https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
-	// TODO: make a matrix library
+	float _pitch = _angle.getX()*(M_PI/180);
+	float _yaw = -1*_angle.getY()*(M_PI/180);
+	float _roll = _angle.getZ()*(M_PI/180);
 
-	float _pitch = -1*_angle.getX()*(M_PI/180);
-	float _yaw = _angle.getZ()*(M_PI/180);
-	float _roll = _angle.getY()*(M_PI/180);
+	// Ax: roll (rot about x)
+	// Ay: pitch (rot about y)
+	// Az: yaw (rot about z)
+	Matrix3 Ax(1,0,0,0,cos(_roll),-sin(_roll),0,sin(_roll),cos(_roll));
+	Matrix3 Ay(cos(_pitch),0,sin(_pitch),0,1,0,-sin(_pitch),0,cos(_pitch));
+	Matrix3 Az(cos(_yaw),-sin(_yaw),0,sin(_yaw),cos(_yaw),0,0,0,1);
 
-	float _x = getX();
-	float _y = getY();
-	float _z = getZ();
-
-	Vec3 result(0,0,0);
-
-	result.setX( _x*(cos(_pitch)*cos(_roll)) + _y*(-cos(_yaw)*sin(_roll) + sin(_yaw)*sin(_pitch)*cos(_roll)) + _z*(sin(_yaw)*sin(_roll) + cos(_yaw)*sin(_pitch)*cos(_roll)) );
-	result.setY( _x*(cos(_pitch)*sin(_roll)) + _y*(cos(_yaw)*cos(_roll) + sin(_yaw)*sin(_pitch)*sin(_roll)) + _z*(-sin(_yaw)*cos(_roll) + cos(_yaw)*sin(_pitch)*sin(_roll)) );
-	result.setZ( _x*(-sin(_pitch)) + _y*(sin(_yaw)*cos(_pitch)) + _z*(cos(_yaw)*cos(_pitch)) );
+	Matrix3 R = Az*Ay*Ax;
+	Vec3 result = (*this)*R;
 
 	return result;
+}
+
+Matrix3 Vec3::getTransformationMatrix(const Vec3& _target) const {
+	// https://math.stackexchange.com/a/476311/221755
+	// get rotation matrix for this to rotate onto _target
+	return Matrix3();
 }
 
 Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs) {

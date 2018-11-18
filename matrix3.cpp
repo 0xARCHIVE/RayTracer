@@ -1,4 +1,5 @@
 #include "matrix3.h"
+#include "vec3.h"
 
 #include <iterator>
 

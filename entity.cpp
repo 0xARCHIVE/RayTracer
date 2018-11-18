@@ -17,17 +17,20 @@ void Entity::setScene(Scene * const _scene) {
 }
 
 void Entity::setPosition(const Vec3& _position) {
-	translateChildrenBy(_position - position);
+	translateChildrenTo(_position);
 	position = _position;
 }
 
 void Entity::setAngle(const Vec3& _angle) {
-	Vec3 dA = (_angle - getAngle());
+	localX = Vec3(1,0,0);
+	localY = Vec3(0,1,0);
+	localZ = Vec3(0,0,1);
 
-	rotateChildrenBy(dA);
-	localX = localX.rotate(dA);
-	localY = localY.rotate(dA);
-	localZ = localZ.rotate(dA);
+	rotateChildrenTo(_angle);
+
+	localX = localX.rotate(_angle);
+	localY = localY.rotate(_angle);
+	localZ = localZ.rotate(_angle);
 
 	angle = _angle;
 }
@@ -52,20 +55,21 @@ void Entity::rotate(const Vec3& _angle) {
 	setAngle(getAngle() + _angle);
 }
 
-void Entity::translateChildrenBy(const Vec3& _vector) {
+void Entity::translateChildrenTo(const Vec3& _vector) {
 	for (auto child : children) {
-		child->translate(_vector);
+		child->setPosition(_vector);
 	}
 }
 
-void Entity::rotateChildrenBy(const Vec3& _angle) {
+void Entity::rotateChildrenTo(const Vec3& _angle) {
 	for (auto child : children) {
 		Vec3 dV = (child->getPosition() - getPosition());
-		dV = dV.rotate(_angle);
-		Vec3 newPos = dV + getPosition();
+		Vec3 newPos = dV.rotate(_angle);
+
+		Vec3 dA = child->getAngle() - getAngle();
 
 		child->setPosition(newPos);
-		child->rotate(_angle);
+		child->setAngle(_angle + dA);	// not producing good results, change to quaternions?
 	}
 }
 

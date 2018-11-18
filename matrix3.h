@@ -3,12 +3,13 @@
 
 #include "vec3.h"
 
-#include <vector>
 #include <iostream>
+#include <vector>
 #include <experimental/optional>
 
 namespace RayTracer {
 
+class Vector3;
 class Matrix3 {
 	private:
 		float data[9];
