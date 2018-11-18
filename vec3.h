@@ -33,7 +33,7 @@ class Vec3 {
 		Vec3 rotate(const Vec3& _angle) const;
 };
 
-Vec3 &operator+=(Vec3 &ls, const Vec3 &rhs);
+Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs);
 const Vec3 operator+(const Vec3 &lhs, const Vec3 &rhs);
 
 Vec3 &operator-=(Vec3 &lhs, const Vec3 &rhs);

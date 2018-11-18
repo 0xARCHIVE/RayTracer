@@ -131,11 +131,7 @@ Vec3 &operator-=(Vec3 &lhs, const Vec3 &rhs) {
 }
 
 const Vec3 operator-(const Vec3 &lhs, const Vec3 &rhs) {
-	Vec3 output;
-	output.setX(lhs.getX() - rhs.getX());
-	output.setY(lhs.getY() - rhs.getY());
-	output.setZ(lhs.getZ() - rhs.getZ());
-	return output;
+	return (lhs + (-1*rhs));
 }
 
 Vec3 &operator*=(Vec3 &v, float f) {
