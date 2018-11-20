@@ -1,7 +1,5 @@
 #include "entity.h"
 
-#include <iostream>
-
 #include <experimental/optional>
 
 namespace RayTracer {
@@ -157,7 +155,6 @@ Vec3 Entity::toWorld(const Vec3& _vector) const {
 
 Vec3 Entity::toWorldOrientation(const Vec3& _vector) const {
 	// transforms _vector out of our vectorspace without translating
-	//std::cout << "toWorldOrientation " << _vector << " | " << worldQuat.toAngle() << " = " << _vector.rotate(worldQuat) << std::endl;
 	return _vector.rotate(worldQuat);
 }
 
