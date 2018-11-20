@@ -1,4 +1,6 @@
 *.o
 *.swp
 *.old
+*.sh
+buildoutput
 raytracer
