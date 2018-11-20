@@ -49,15 +49,12 @@ class Entity {
 		void setParent(Entity * const _parent, bool dontCallAgain = false);
 
 		void translateChildrenTo(const Vec3& _vector);
-		void rotateChildrenTo(const Vec3& _angle);
-
 		void translateChildren(const Vec3& _vector);
+		void rotateChildrenTo(const Vec3& _angle);
 		void rotateChildren(const Vec3& _angle);
 
-		void childrenUpdateWorldPos(const Vec3& pos_diff);
-		void childrenUpdateWorldQuat(const Vec3& ang_diff);
-		void updateWorldPos(const Vec3& pos_diff);
-		void updateWorldQuat(const Vec3& ang_diff);
+		void childrenSnapToParent();
+		void snapToParent();
 
 		Vec3 up() const;
 		Vec3 forward() const;

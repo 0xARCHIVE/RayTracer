@@ -1,5 +1,7 @@
 #include "entity.h"
 
+#include <iostream>
+
 #include <experimental/optional>
 
 namespace RayTracer {
@@ -50,23 +52,17 @@ Vec3 Entity::getAngle() const {
 
 void Entity::translate(const Vec3& _vector) {
 	setPosition(getPosition() + _vector);
-	childrenUpdateWorldPos(_vector);
+	translateChildren(_vector);
 }
 
 void Entity::rotate(const Vec3& _angle) {
 	setAngle(getAngle() + _angle);
-	childrenUpdateWorldQuat(_angle);
+	childrenSnapToParent();
 }
 
 void Entity::translateChildrenTo(const Vec3& _vector) {
 	for (auto child : children) {
 		child->setPosition(_vector);
-	}
-}
-
-void Entity::rotateChildrenTo(const Vec3& _angle) {
-	for (auto child : children) {
-		child->setAngle(_angle);
 	}
 }
 
@@ -76,31 +72,29 @@ void Entity::translateChildren(const Vec3& _vector) {
 	}
 }
 
+void Entity::rotateChildrenTo(const Vec3& _angle) {
+	for (auto child : children) {
+		child->setAngle(_angle);
+	}
+}
+
 void Entity::rotateChildren(const Vec3& _angle) {
 	for (auto child : children) {
 		child->rotate(_angle);
 	}
 }
 
-void Entity::childrenUpdateWorldPos(const Vec3& pos_diff) {
+void Entity::childrenSnapToParent() {
 	for (auto child : children) {
-		child->updateWorldPos(pos_diff);
+		child->snapToParent();
 	}
 }
 
-void Entity::childrenUpdateWorldQuat(const Vec3& ang_diff) {
-	for (auto child : children) {
-		child->updateWorldQuat(ang_diff);
-	}
-}
-
-void Entity::updateWorldPos(const Vec3& pos_diff) {
-	worldPosition += pos_diff;
-}
-
-void Entity::updateWorldQuat(const Vec3& ang_diff) {
-	Quat diff(ang_diff);
-	worldQuat = diff*worldQuat;
+void Entity::snapToParent() {
+	// recalculate worldPos and worldQuat
+	if (!hasParent()) { return; }
+	worldPosition = getParent()->toWorld(localPosition);
+	worldQuat = getParent()->toWorldOrientation(localQuat);
 }
 
 bool Entity::hasParent() const {
@@ -138,6 +132,7 @@ void Entity::setParent(Entity * const _parent, bool dontCallAgain) {
 	parent = _parent;
 
 	localQuat = parent->toLocalOrientation(worldQuat);
+	localPosition = getParent()->toLocal(worldPosition);
 
 	if (dontCallAgain) { return; }	// prevents looping
 	_parent->addChild(this, true);
@@ -162,6 +157,7 @@ Vec3 Entity::toWorld(const Vec3& _vector) const {
 
 Vec3 Entity::toWorldOrientation(const Vec3& _vector) const {
 	// transforms _vector out of our vectorspace without translating
+	//std::cout << "toWorldOrientation " << _vector << " | " << worldQuat.toAngle() << " = " << _vector.rotate(worldQuat) << std::endl;
 	return _vector.rotate(worldQuat);
 }
 

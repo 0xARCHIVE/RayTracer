@@ -81,9 +81,9 @@ int main() {
 
 	std::vector<Plane *> planes = bb.getPlanes();
 	std::cout << "===" << std::endl;
-	for (auto plane : planes) {
-		std::cout << plane->getPosition() << " | " << plane->getNorm() << " | " << plane->getAngle() << " | " << plane->toWorld(Vec3(0,0,1)) << " = " << plane->getPosition() + plane->up() << std::endl;
-	}
+//	for (auto plane : planes) {
+//		std::cout << plane->getPosition() << " | " << plane->getNorm() << " | " << plane->getAngle() << " | " << plane->toWorld(Vec3(0,0,1)) << " = " << plane->getPosition() + plane->up() << std::endl;
+//	}
 	std::cout << "===" << std::endl;
 
 	std::cout << std::endl;
