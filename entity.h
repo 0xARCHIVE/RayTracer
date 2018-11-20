@@ -2,26 +2,25 @@
 #define ENTITY_H
 
 #include "vec3.h"
+#include "quat.h"
 
 #include <vector>
 
 namespace RayTracer {
 
 class Scene;
+
 class Entity {
 	protected:
 		Entity* parent;
 		std::vector<Entity*> children;
 		Scene* scene;
-		Vec3 position;
-		Vec3 angle;
 
-		Vec3 localX;
-		Vec3 localY;
-		Vec3 localZ;
+		Vec3 worldPosition;
+		Vec3 localPosition;
 
-		void translateChildrenTo(const Vec3& _vector);
-		void rotateChildrenTo(const Vec3& _angle);
+		Quat worldQuat;
+		Quat localQuat;
 	public:
 		Entity(Scene * const _scene, const Vec3& _position, const Vec3& _angle);
 		virtual void setScene(Scene * const _scene);
@@ -34,12 +33,31 @@ class Entity {
 		void translate(const Vec3& _vector);
 		void rotate(const Vec3& _angle);
 
-		bool hasParent();
-		Entity * getParent();
-		bool hasChildren();
+		Vec3 toWorld(const Vec3 &v) const;
+		Quat toWorldOrientation(const Quat &q) const;
+		Vec3 toWorldOrientation(const Vec3 &v) const;
+
+		Vec3 toLocal(const Vec3 &v) const;
+		Quat toLocalOrientation(const Quat &q) const;
+		Vec3 toLocalOrientation(const Vec3 &v) const;
+
+		bool hasParent() const;
+		Entity * getParent() const;
+		bool hasChildren() const;
 		std::vector<Entity*> getChildren();
 		void addChild(Entity * const _child, bool dontCallAgain = false);
 		void setParent(Entity * const _parent, bool dontCallAgain = false);
+
+		void translateChildrenTo(const Vec3& _vector);
+		void rotateChildrenTo(const Vec3& _angle);
+
+		void translateChildren(const Vec3& _vector);
+		void rotateChildren(const Vec3& _angle);
+
+		void childrenUpdateWorldPos(const Vec3& pos_diff);
+		void childrenUpdateWorldQuat(const Vec3& ang_diff);
+		void updateWorldPos(const Vec3& pos_diff);
+		void updateWorldQuat(const Vec3& ang_diff);
 
 		Vec3 up() const;
 		Vec3 forward() const;

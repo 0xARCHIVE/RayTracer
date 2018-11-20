@@ -5,7 +5,8 @@
 
 namespace RayTracer {
 
-class Matrix3;
+class Quat;
+
 class Vec3 {
 	private:
 		float x;
@@ -31,8 +32,8 @@ class Vec3 {
 		Vec3 angleToDirection() const;
 		Vec3 directionToAngle() const;
 
-		Vec3 rotate(const Vec3& _angle) const;
-		Matrix3 getTransformationMatrix(const Vec3& _target) const;
+		Vec3 rotate(const Vec3 &ang) const;
+		Vec3 rotate(const Quat &q) const;
 };
 
 Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs);
@@ -40,6 +41,8 @@ const Vec3 operator+(const Vec3 &lhs, const Vec3 &rhs);
 
 Vec3 &operator-=(Vec3 &lhs, const Vec3 &rhs);
 const Vec3 operator-(const Vec3 &lhs, const Vec3 &rhs);
+
+const Vec3 operator-(const Vec3 &v);
 
 Vec3 &operator*=(Vec3 &v, float f);
 const Vec3 operator*(const Vec3 &v, float f);

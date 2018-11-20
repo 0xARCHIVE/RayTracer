@@ -1,9 +1,9 @@
 #define _USE_MATH_DEFINES
 
 #include "vec3.h"
-#include "matrix3.h"
+#include "quat.h"
 
-#include "math.h"
+#include <cmath>
 
 namespace RayTracer {
 
@@ -72,53 +72,29 @@ Vec3 Vec3::normalised() const {
 	return (*this)*(1.0/this->length());
 }
 
+Vec3 Vec3::rotate(const Vec3 &ang) const {
+	return rotate(Quat(ang));
+}
+
+Vec3 Vec3::rotate(const Quat &q) const {
+	Quat qnorm = q.normalised();
+	Quat qconj = qnorm.conjugate();
+	return (qnorm*((*this)*qconj)).toVector();
+}
+
+
 Vec3 Vec3::angleToDirection() const {
-	Vec3 result(0,0,1);	// angle of (0,0,0)
-	return result.rotate(*this);
+	// rotate "forward" (1,0,0) to the angle and that's where we're pointing
+	return Vec3(1,0,0).rotate(Quat((*this)));
 }
 
 Vec3 Vec3::directionToAngle() const {
+	// find quat between (1,0,0) and us, and convert it to angle
 	if (length() == 0) { return Vec3(0,0,0); }
 
-	Vec3 _normalised = normalised();
-
-	float x = _normalised.getX();
-	float y = _normalised.getY();
-	float z = _normalised.getZ();
-
-	float pitch = -(180/M_PI)*atan2(x,z);
-	float roll = (180/M_PI)*atan2(y,(sqrt(pow(x,2)+pow(z,2))));
-//	float pitch = (180/M_PI)*acos(z);
-//	float yaw = (180/M_PI)*atan2(y,x);
-	float yaw = 0;
-
-	return Vec3(pitch,yaw,roll);
-}
-
-Vec3 Vec3::rotate(const Vec3& _angle) const {
-	// https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
-	float _pitch = _angle.getX()*(M_PI/180);
-	float _yaw = -1*_angle.getY()*(M_PI/180);
-	float _roll = _angle.getZ()*(M_PI/180);
-
-	// Ax: roll (rot about x)
-	// Ay: pitch (rot about y)
-	// Az: yaw (rot about z)
-	Matrix3 Ax(1,0,0,0,cos(_roll),-sin(_roll),0,sin(_roll),cos(_roll));
-	Matrix3 Ay(cos(_pitch),0,sin(_pitch),0,1,0,-sin(_pitch),0,cos(_pitch));
-	Matrix3 Az(cos(_yaw),-sin(_yaw),0,sin(_yaw),cos(_yaw),0,0,0,1);
-
-	Matrix3 R = Az*Ay*Ax;
-	Vec3 result = (*this)*R;
-
-	return result;
-}
-
-Matrix3 Vec3::getTransformationMatrix(const Vec3& _target) const {
-	// https://math.stackexchange.com/a/476311/221755
-	// get rotation matrix for this to rotate onto _target
-	// todo: implement
-	return Matrix3();
+	Quat q;
+	q = q.quatBetween(Vec3(1,0,0),*this);
+	return q.toAngle();
 }
 
 Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs) {
@@ -141,6 +117,10 @@ Vec3 &operator-=(Vec3 &lhs, const Vec3 &rhs) {
 
 const Vec3 operator-(const Vec3 &lhs, const Vec3 &rhs) {
 	return (lhs + (-1*rhs));
+}
+
+const Vec3 operator-(const Vec3 &v) {
+	return (-1*v);
 }
 
 Vec3 &operator*=(Vec3 &v, float f) {

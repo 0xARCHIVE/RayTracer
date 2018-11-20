@@ -1,11 +1,12 @@
 #include "entity.h"
 
+#include <experimental/optional>
+
 namespace RayTracer {
 
 Entity::Entity(Scene * const _scene, const Vec3& _position, const Vec3& _angle) {
-	localX = Vec3(1,0,0);
-	localY = Vec3(0,1,0);
-	localZ = Vec3(0,0,1);
+	parent = nullptr;
+	scene = nullptr;
 
 	setPosition(_position);
 	setAngle(_angle);
@@ -17,22 +18,22 @@ void Entity::setScene(Scene * const _scene) {
 }
 
 void Entity::setPosition(const Vec3& _position) {
-	translateChildrenTo(_position);
-	position = _position;
+	worldPosition = _position;
+	localPosition = Vec3(0,0,0);
+
+	if (hasParent()) {
+		localPosition = getParent()->toLocal(worldPosition);
+	}
 }
 
 void Entity::setAngle(const Vec3& _angle) {
-	localX = Vec3(1,0,0);
-	localY = Vec3(0,1,0);
-	localZ = Vec3(0,0,1);
+	Quat q(_angle);
+	worldQuat = q;
+	localQuat = Quat(Vec3(0,0,0));
 
-	rotateChildrenTo(_angle);
-
-	localX = localX.rotate(_angle);
-	localY = localY.rotate(_angle);
-	localZ = localZ.rotate(_angle);
-
-	angle = _angle;
+	if (hasParent()) {
+		localQuat = getParent()->toLocalOrientation(q);
+	}
 }
 
 Scene* Entity::getScene() const {
@@ -40,19 +41,21 @@ Scene* Entity::getScene() const {
 }
 
 Vec3 Entity::getPosition() const {
-	return position;
+	return toWorld(Vec3(0,0,0));
 }
 
 Vec3 Entity::getAngle() const {
-	return angle;
+	return worldQuat.toAngle();
 }
 
 void Entity::translate(const Vec3& _vector) {
 	setPosition(getPosition() + _vector);
+	childrenUpdateWorldPos(_vector);
 }
 
 void Entity::rotate(const Vec3& _angle) {
 	setAngle(getAngle() + _angle);
+	childrenUpdateWorldQuat(_angle);
 }
 
 void Entity::translateChildrenTo(const Vec3& _vector) {
@@ -63,26 +66,53 @@ void Entity::translateChildrenTo(const Vec3& _vector) {
 
 void Entity::rotateChildrenTo(const Vec3& _angle) {
 	for (auto child : children) {
-		Vec3 dV = (child->getPosition() - getPosition());
-		Vec3 newPos = dV.rotate(_angle);
-
-		Vec3 dA = child->getAngle() - getAngle();
-
-		child->setPosition(newPos);
-		child->setAngle(_angle + dA);	// not producing good results, change to quaternions?
+		child->setAngle(_angle);
 	}
 }
 
-bool Entity::hasParent() {
-	if (parent == nullptr) { return false; }
+void Entity::translateChildren(const Vec3& _vector) {
+	for (auto child : children) {
+		child->translate(_vector);
+	}
+}
+
+void Entity::rotateChildren(const Vec3& _angle) {
+	for (auto child : children) {
+		child->rotate(_angle);
+	}
+}
+
+void Entity::childrenUpdateWorldPos(const Vec3& pos_diff) {
+	for (auto child : children) {
+		child->updateWorldPos(pos_diff);
+	}
+}
+
+void Entity::childrenUpdateWorldQuat(const Vec3& ang_diff) {
+	for (auto child : children) {
+		child->updateWorldQuat(ang_diff);
+	}
+}
+
+void Entity::updateWorldPos(const Vec3& pos_diff) {
+	worldPosition += pos_diff;
+}
+
+void Entity::updateWorldQuat(const Vec3& ang_diff) {
+	Quat diff(ang_diff);
+	worldQuat = diff*worldQuat;
+}
+
+bool Entity::hasParent() const {
+	if (nullptr == parent) { return false; }
 	return true;
 }
 
-Entity* Entity::getParent() {
+Entity* Entity::getParent() const {
 	return parent;
 }
 
-bool Entity::hasChildren() {
+bool Entity::hasChildren() const {
 	if (children.size() > 0) { return true; }
 	return false;
 }
@@ -107,20 +137,54 @@ void Entity::setParent(Entity * const _parent, bool dontCallAgain) {
 
 	parent = _parent;
 
+	localQuat = parent->toLocalOrientation(worldQuat);
+
 	if (dontCallAgain) { return; }	// prevents looping
 	_parent->addChild(this, true);
 }
 
 Vec3 Entity::up() const {
-	return localZ;
+	return toWorldOrientation(Vec3(0,0,1));
 }
 
 Vec3 Entity::forward() const {
-	return localX;
+	return toWorldOrientation(Vec3(1,0,0));
 }
 
 Vec3 Entity::right() const {
-	return localY;
+	return toWorldOrientation(Vec3(0,1,0));
+}
+
+Vec3 Entity::toWorld(const Vec3& _vector) const {
+	// transforms _vector out of our vectorspace
+	return toWorldOrientation(_vector) + worldPosition;
+}
+
+Vec3 Entity::toWorldOrientation(const Vec3& _vector) const {
+	// transforms _vector out of our vectorspace without translating
+	return _vector.rotate(worldQuat);
+}
+
+Quat Entity::toWorldOrientation(const Quat& _q) const {
+	// transforms _q out of our vectorspace without translating
+	return (_q*worldQuat);
+}
+
+Vec3 Entity::toLocal(const Vec3& _vector) const {
+	// transforms _vector into our vectorspace
+	Vec3 v = _vector - worldPosition;
+	return toLocalOrientation(v);
+}
+
+Vec3 Entity::toLocalOrientation(const Vec3& _vector) const {
+	// transforms _vector into our vectorspace without translating
+	return _vector.rotate(worldQuat.conjugate());
+}
+
+Quat Entity::toLocalOrientation(const Quat& _q) const {
+	// transforms _q into our vectorspace without translating
+	// https://stackoverflow.com/a/22167097/4000963
+	return _q*worldQuat.conjugate();
 }
 
 }
