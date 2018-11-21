@@ -2,12 +2,13 @@
 #define BOX_H
 
 #include "convexpolygon.h"
-#include "ray.h"
-#include "vec3.h"
 
 #include <experimental/optional>
 
 namespace RayTracer {
+
+class Ray;
+class Vec3;
 
 class Box : public ConvexPolygon {
 	protected:

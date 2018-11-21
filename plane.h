@@ -15,10 +15,10 @@ class Plane : public Surface {
 		std::experimental::optional<Vec3> getHitNorm(const Vec3& _point);
 		std::experimental::optional<IntersectData> getIntersectData(const Ray& _r);
 		std::experimental::optional<IntersectData> intersect(const Ray& _r);
-		std::vector<Vec3> getBasisVectors(float u, float v);
-		Vec3 getPointOnSurface(float u, float v);
-		float distToPlane(const Vec3& _point) const;
-		float signedDistToPlane(const Vec3& _point) const;
+		std::vector<Vec3> getBasisVectors(double u, double v);
+		Vec3 getPointOnSurface(double u, double v);
+		double distToPlane(const Vec3& _point) const;
+		double signedDistToPlane(const Vec3& _point) const;
 		bool isPointInsidePlane(const Vec3& _point) const;
 		bool isPointInPlane(const Vec3& _point) const;
 		Vec3 getNorm() const;

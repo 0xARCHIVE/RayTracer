@@ -13,41 +13,41 @@ Vec3::Vec3() {
 	this->setZ(0);
 }
 
-Vec3::Vec3(float x, float y, float z) {
+Vec3::Vec3(double x, double y, double z) {
 	this->setX(x);
 	this->setY(y);
 	this->setZ(z);
 }
 
-float Vec3::getX() const {
+double Vec3::getX() const {
 	return this->x;
 }
 
-float Vec3::getY() const {
+double Vec3::getY() const {
 	return this->y;
 }
 
-float Vec3::getZ() const {
+double Vec3::getZ() const {
 	return this->z;
 }
 
-void Vec3::setX(float x) {
+void Vec3::setX(double x) {
 	this->x = x;
 }
 
-void Vec3::setY(float y) {
+void Vec3::setY(double y) {
 	this->y = y;
 }
 
-void Vec3::setZ(float z) {
+void Vec3::setZ(double z) {
 	this->z = z;
 }
 
-float Vec3::length() const {
+double Vec3::length() const {
 	return std::sqrt(std::pow(this->getX(),2) + std::pow(this->getY(),2) + std::pow(this->getZ(),2));
 }
 
-float Vec3::dot(const Vec3 &v) const {
+double Vec3::dot(const Vec3 &v) const {
 	return (this->getX()*v.getX() + this->getY()*v.getY() + this->getZ()*v.getZ());
 }
 
@@ -123,12 +123,12 @@ const Vec3 operator-(const Vec3 &v) {
 	return (-1*v);
 }
 
-Vec3 &operator*=(Vec3 &v, float f) {
+Vec3 &operator*=(Vec3 &v, double f) {
 	v = v*f;
 	return v;
 }
 
-const Vec3 operator*(const Vec3 &v, float f) {
+const Vec3 operator*(const Vec3 &v, double f) {
 	Vec3 output;
 	output.setX(v.getX()*f);
 	output.setY(v.getY()*f);
@@ -136,12 +136,12 @@ const Vec3 operator*(const Vec3 &v, float f) {
 	return output;
 }
 
-Vec3 &operator*=(float f, Vec3 &v) {
+Vec3 &operator*=(double f, Vec3 &v) {
 	v = v*f;
 	return v;
 }
 
-const Vec3 operator*(float f, const Vec3 &v) {
+const Vec3 operator*(double f, const Vec3 &v) {
 	return v*f;
 }
 

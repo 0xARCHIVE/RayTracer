@@ -1,4 +1,5 @@
 #include "camera.h"
+
 #include <iostream>
 
 namespace RayTracer {
@@ -22,10 +23,10 @@ void Camera::captureImage() {
 	if (cameraSensor == nullptr) { return; }
 
 	capturedImage.RGBvalues = std::vector<Vec3>();
-	for (int i = 0; i < capturedImage.resolution_x; i++) {
-		for (int j = 0; j < capturedImage.resolution_y; j++) {
+	for (int i = -capturedImage.resolution_x/2; i < capturedImage.resolution_x/2; i++) {
+		std::cout << (100.0*(i + capturedImage.resolution_x/2)/capturedImage.resolution_x) << "%" << std::endl;
+		for (int j = -capturedImage.resolution_y/2; j < capturedImage.resolution_y/2; j++) {
 			Vec3 _result = cameraSensor->captureImageData(i,j);
-			std::cout << "pixel " << i << " " << j << " = " << _result << std::endl;
 			capturedImage.RGBvalues.push_back(_result);
 		}
 	}

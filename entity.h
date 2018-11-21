@@ -23,7 +23,7 @@ class Entity {
 		Quat localQuat;
 	public:
 		Entity(Scene * const _scene, const Vec3& _position, const Vec3& _angle);
-		virtual void setScene(Scene * const _scene);
+		void setScene(Scene * const _scene);
 		Scene * getScene() const;
 
 		void setPosition(const Vec3& _position);

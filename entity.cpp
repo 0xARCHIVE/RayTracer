@@ -15,6 +15,10 @@ Entity::Entity(Scene * const _scene, const Vec3& _position, const Vec3& _angle) 
 
 void Entity::setScene(Scene * const _scene) {
 	scene = _scene;
+
+	for (auto child : children) {
+		child->setScene(_scene);
+	}
 }
 
 void Entity::setPosition(const Vec3& _position) {

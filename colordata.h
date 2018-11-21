@@ -7,10 +7,10 @@ namespace RayTracer {
 
 struct ColorData {
 	Vec3 color = Vec3(0,0,0);
-	float emissivity = 0;
-	float reflectivity = 0;
-	float transmissivity = 0;
-	float multiplier = 0;
+	double emissivity = 0;
+	double reflectivity = 0;
+	double transmissivity = 0;
+	double multiplier = 0;
 };
 
 }

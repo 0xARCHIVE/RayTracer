@@ -8,9 +8,9 @@ namespace RayTracer {
 class Scene;
 class Ray : public RayGenerator {
 	protected:
-		ColorData colorData;
 		int life_left;
 	public:
+		ColorData colorData;	// make private again
 		Ray(Scene * const _scene, const Vec3& _position, const Vec3& _direction, int _life_left);
 		Ray(Scene * const _scene, const Vec3& _position, const Vec3& _direction, int _life_left, ColorData _colorData);
 		Vec3 computeResult();

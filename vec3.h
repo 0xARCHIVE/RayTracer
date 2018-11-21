@@ -9,23 +9,23 @@ class Quat;
 
 class Vec3 {
 	private:
-		float x;
-		float y;
-		float z;
+		double x;
+		double y;
+		double z;
 	public:
 		Vec3();
-		Vec3(float x, float y, float z);
+		Vec3(double x, double y, double z);
 
-		float getX() const;
-		float getY() const;
-		float getZ() const;
+		double getX() const;
+		double getY() const;
+		double getZ() const;
 
-		void setX(float x);
-		void setY(float y);
-		void setZ(float z);
+		void setX(double x);
+		void setY(double y);
+		void setZ(double z);
 
-		float length() const;
-		float dot(const Vec3& v) const;
+		double length() const;
+		double dot(const Vec3& v) const;
 		Vec3 cross(const Vec3& v) const;
 		Vec3 hadamard(const Vec3& v) const;
 		Vec3 normalised() const;
@@ -44,11 +44,11 @@ const Vec3 operator-(const Vec3 &lhs, const Vec3 &rhs);
 
 const Vec3 operator-(const Vec3 &v);
 
-Vec3 &operator*=(Vec3 &v, float f);
-const Vec3 operator*(const Vec3 &v, float f);
+Vec3 &operator*=(Vec3 &v, double f);
+const Vec3 operator*(const Vec3 &v, double f);
 
-Vec3 &operator*=(float f, Vec3 &v);
-const Vec3 operator*(float f, const Vec3 &v);
+Vec3 &operator*=(double f, Vec3 &v);
+const Vec3 operator*(double f, const Vec3 &v);
 
 bool operator==(const Vec3 &lhs, const Vec3 &rhs);
 

@@ -2,13 +2,14 @@
 #define OBJECT_H
 
 #include "entity.h"
-#include "boundingbox.h"
-#include "surface.h"
-#include "vec3.h"
 
 #include <vector>
 
 namespace RayTracer {
+
+class BoundingBox;
+class Surface;
+class Vec3;
 
 class Object : public Entity {
 	protected:
@@ -20,7 +21,6 @@ class Object : public Entity {
 		std::vector<Surface *>& getSurfaces();
 		void setBoundingBox(BoundingBox* _boundingBox);
 		BoundingBox * getBoundingBox();
-		virtual void setScene(Scene * const _scene);
 };
 
 }

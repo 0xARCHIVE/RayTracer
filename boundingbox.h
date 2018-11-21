@@ -2,7 +2,6 @@
 #define BOUNDINGBOX_H
 
 #include "box.h"
-#include "surface.h"
 
 namespace RayTracer {
 

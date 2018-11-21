@@ -2,5 +2,6 @@
 *.swp
 *.old
 *.sh
+*.ppm
 buildoutput
 raytracer

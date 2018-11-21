@@ -1,11 +1,16 @@
 #include "consts.h"
 #include "camerasensor.h"
 
+#include "scene.h"
+#include <experimental/optional>
+
+#include <iostream>
+
 namespace RayTracer {
 
 CameraSensor::CameraSensor() : RayGenerator(nullptr) {}
 
-CameraSensor::CameraSensor(Scene * const _scene, Surface * const _surface, int _resolution_x, int _resolution_y, float _sensor_dpi) : RayGenerator(_scene) {
+CameraSensor::CameraSensor(Scene * const _scene, Surface * const _surface, int _resolution_x, int _resolution_y, double _sensor_dpi) : RayGenerator(_scene) {
 	setSurface(_surface);
 	setDPI(_sensor_dpi);
 	setResolution(_resolution_x, _resolution_y);
@@ -15,31 +20,29 @@ Vec3 CameraSensor::getPixelPosition(int _x, int _y) {
 	Vec3 _position = Vec3(0,0,0);
 	Surface * _surface = getSurface();
 	if (_surface == nullptr) { return _position; }
-	float u = _x/getDPI();
-	float v = _y/getDPI();
+	double u = _x/getDPI();
+	double v = _y/getDPI();
 	_position = _surface->getPointOnSurface(u,v);
 	return _position;
 }
-
 Vec3 CameraSensor::captureImageData(int _x, int _y) {
 	Vec3 _result = Vec3(0,0,0);
 
 	Surface * _surface = getSurface();
 	if (_surface == nullptr) { return _result; }
 
-	Vec3 _position = _surface->getPointOnSurface(_x,_y);
+	Vec3 _position = getPixelPosition(_x,_y);
 	std::experimental::optional<Vec3> _direction = surface->getHitNorm(_position);
 
 	if (!_direction) { return _result; }
+	//std::cout << _direction.value() << std::endl;
 
 	ColorData _colorData = surface->getColorData(_position);
 
-	std::vector<Ray> _rays = generateRays(_position, _direction.value(), GLOBAL_SETTING_RAY_MAX_LIFE, _colorData, GLOBAL_SETTING_RAY_SPREAD, GLOBAL_SETTING_RAY_NUM_SPAWN);
-	for (auto _r : _rays) {
-		_result += _r.computeResult();
-	}
+	std::vector<Ray> _rays = generateRays(_position, _direction.value(), GLOBAL_SETTING_RAY_MAX_LIFE + 1, _colorData, GLOBAL_SETTING_RAY_SPREAD, GLOBAL_SETTING_RAY_NUM_SPAWN);
+	Vec3 result = computeRayResult();
 
-	return _result;
+	return result;
 }
 
 int CameraSensor::resolutionX() {
@@ -50,7 +53,7 @@ int CameraSensor::resolutionY() {
 	return resolution_y;
 }
 
-float CameraSensor::getDPI() {
+double CameraSensor::getDPI() {
 	return sensor_dpi;
 }
 
@@ -59,7 +62,7 @@ void CameraSensor::setResolution(int _resolution_x, int _resolution_y) {
 	resolution_y = _resolution_y;
 }
 
-void CameraSensor::setDPI(float _dpi) {
+void CameraSensor::setDPI(double _dpi) {
 	if (_dpi == 0) { _dpi = 1.0; }
 	sensor_dpi = _dpi;
 }
