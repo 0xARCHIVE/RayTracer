@@ -102,7 +102,8 @@ Vec3 Vec3::randomSpread(double angle) const {
 	// generate a unit vector randomly spread around (this) in a cone defined by angle
 	// https://math.stackexchange.com/a/205589/221755
 	std::random_device rd;
-	std::mt19937 gen(rd());
+	std::minstd_rand gen(rd());
+//	std::mt19937 gen(rd());
 	std::uniform_real_distribution<double> dist_z(cos((M_PI/180.0)*angle),1.0);
 	std::uniform_real_distribution<double> dist_phi(0,2*M_PI);
 
