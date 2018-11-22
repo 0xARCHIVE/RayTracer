@@ -34,6 +34,8 @@ class Vec3 {
 
 		Vec3 rotate(const Vec3 &ang) const;
 		Vec3 rotate(const Quat &q) const;
+
+		Vec3 randomSpread(double angle) const;
 };
 
 Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs);

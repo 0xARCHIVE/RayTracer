@@ -45,7 +45,7 @@ Scene* Entity::getScene() const {
 }
 
 Vec3 Entity::getPosition() const {
-	return toWorld(Vec3(0,0,0));
+	return worldPosition;
 }
 
 Vec3 Entity::getAngle() const {

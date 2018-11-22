@@ -3,6 +3,7 @@
 #include "vec3.h"
 #include "quat.h"
 
+#include <random>
 #include <cmath>
 
 namespace RayTracer {
@@ -95,6 +96,29 @@ Vec3 Vec3::directionToAngle() const {
 	Quat q;
 	q = q.quatBetween(Vec3(1,0,0),*this);
 	return q.toAngle();
+}
+
+Vec3 Vec3::randomSpread(double angle) const {
+	// generate a unit vector randomly spread around (this) in a cone defined by angle
+	// https://math.stackexchange.com/a/205589/221755
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<double> dist_z(cos((M_PI/180.0)*angle),1.0);
+	std::uniform_real_distribution<double> dist_phi(0,2*M_PI);
+
+	double _z = dist_z(gen);
+	double _phi = dist_phi(gen);
+	Vec3 v( sqrt(1 - pow(_z,2))*cos(_phi), sqrt(1 - pow(_z,2))*sin(_phi),_z);
+	v = v.normalised();
+
+	if ((*this) == Vec3(0,0,1)) { return v; }
+	if ((*this) == Vec3(0,0,-1)) { return (-1)*v; }
+
+	Quat q;
+	q = q.quatBetween(Vec3(0,0,1),(*this));
+
+	v = v.rotate(q);
+	return v;
 }
 
 Vec3 &operator+=(Vec3 &lhs, const Vec3 &rhs) {

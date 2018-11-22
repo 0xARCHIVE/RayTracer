@@ -5,3 +5,5 @@
 *.ppm
 buildoutput
 raytracer
+gmon.out
+gprof.out

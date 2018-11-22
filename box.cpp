@@ -23,8 +23,8 @@ Box::Box(Scene* const _scene, const Vec3& _position, const Vec3& _angle, const V
 	// testing
 	ColorData c;
 	c.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-	c.emissivity = 0.1;
-	c.reflectivity = 0.7;
+	c.emissivity = 0.75;
+	c.reflectivity = 0.75;
 	c.transmissivity = 0;
 	c.multiplier = 1;
 

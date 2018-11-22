@@ -8,6 +8,7 @@
 #include "quat.h"
 #include "file.h"
 
+#include <cmath>
 #include <iostream>
 #include <experimental/optional>
 
@@ -17,10 +18,10 @@ int main() {
 	Scene scene;
 
 	// test objects
-	BoundingBox bb1(&scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(10,40,20));
+	BoundingBox bb1(&scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(20,20,1));
 	Object obj1(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb1);
 
-	BoundingBox bb2(&scene, Vec3(0,0,25), Vec3(0,0,0), Vec3(20,20,10));
+	BoundingBox bb2(&scene, Vec3(0,0,5), Vec3(0,0,0), Vec3(5,5,5));
 	Object obj2(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb2);
 	//
 
@@ -34,40 +35,55 @@ int main() {
 	BoundingBox bb5(&scene, Vec3(50,0,0), Vec3(90,0,0), Vec3(100,100,1));
 	Object obj5(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb5);
 
-	BoundingBox bb6(&scene, Vec3(0,0,-50), Vec3(0,0,0), Vec3(100,100,1));
+	BoundingBox bb6(&scene, Vec3(-50,0,0), Vec3(90,0,0), Vec3(100,100,1));
 	Object obj6(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb6);
 
 	BoundingBox bb7(&scene, Vec3(0,0,50), Vec3(0,0,0), Vec3(100,100,1));
 	Object obj7(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb7);
 
+	BoundingBox bb8(&scene, Vec3(0,0,-50), Vec3(0,0,0), Vec3(100,100,1));
+	Object obj8(&scene, Vec3(0,0,0), Vec3(0,0,0), &bb8);
+
 	for (auto plane : bb3.getPlanes()) {
 		ColorData c = plane->getColorData();
+		c.color = Vec3(0.25,0.5,0.5);
 //		c.color = Vec3(1,1,1);
-		c.emissivity = 0.25;
+		c.emissivity = 1;
 		plane->setColorData(c);
 	}
 	for (auto plane : bb4.getPlanes()) {
 		ColorData c = plane->getColorData();
+		c.color = Vec3(0.5,0.5,0.25);
 //		c.color = Vec3(1,1,1);
-		c.emissivity = 0.25;
+		c.emissivity = 0;
 		plane->setColorData(c);
 	}
 	for (auto plane : bb5.getPlanes()) {
 		ColorData c = plane->getColorData();
+		c.color = Vec3(0.5,0.25,0.5);
 //		c.color = Vec3(1,1,1);
-		c.emissivity = 0.25;
+		c.emissivity = 0;
 		plane->setColorData(c);
 	}
 	for (auto plane : bb6.getPlanes()) {
 		ColorData c = plane->getColorData();
+		c.color = Vec3(0.25,0.5,0.25);
 //		c.color = Vec3(1,1,1);
-		c.emissivity = 0.25;
+		c.emissivity = 1;
 		plane->setColorData(c);
 	}
 	for (auto plane : bb7.getPlanes()) {
 		ColorData c = plane->getColorData();
+		c.color = Vec3(0.5,0.25,0.25);
+		c.emissivity = 1;
+		plane->setColorData(c);
+	}
+	//
+	for (auto plane : bb8.getPlanes()) {
+		ColorData c = plane->getColorData();
+		c.color = Vec3(0.25,0.25,0.5);
 //		c.color = Vec3(1,1,1);
-		c.emissivity = 0.25;
+		c.emissivity = 1;
 		plane->setColorData(c);
 	}
 	//
@@ -80,26 +96,14 @@ int main() {
 	colorData.transmissivity = 0;
 	colorData.multiplier = 1;
 
-	Plane surface(&scene, Vec3(-100,0,25), Vec3(100,10,0), false, true);
+	Vec3 camPos = Vec3(10,0,5);
+	Plane surface(&scene, camPos, Vec3(110,170,0), false, true);
 	surface.setColorData(colorData);
 
-	CameraSensor sensor(&scene, &surface, 250,250, 1);
+	CameraSensor sensor(&scene, &surface, 100,100, 1);
 	Camera cam(&scene, &sensor);
 	cam.captureImage();
-
-//	std::cout << surface.getHitNorm(sensor.getPixelPosition(0,0)).value() << std::endl;
-//	std::cout << surface.up() << std::endl;
-
-//	Ray r(&scene, sensor.getPixelPosition(0,0), surface.up(), 2);
-//	std::cout << r.getPosition() << " " << r.getDirection() << std::endl;
-//	std::experimental::optional<IntersectData> data = scene.getIntersectData(r);
-//	if (!data) { std::cout << "no hit" << std::endl; } else {
-//		std::cout << "color " << data.value().colorData.color << std::endl;
-//		std::cout << "hitpos " << data.value().hitPos << std::endl;
-//		std::cout << "hitnorm " << data.value().hitNorm << std::endl;
-//		std::cout << "surface pos " << data.value().surface->getPosition() << std::endl;
-//		std::cout << "up " <<  data.value().surface->up() << std::endl;
-//	}
+	std::cout << "Capture took " << cam.getRunDuration() << "s" << std::endl;
 
 	File outputFile("output.ppm");
 	outputFile.writeImageData(cam.getCapturedImage());

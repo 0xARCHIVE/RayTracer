@@ -16,7 +16,7 @@ CameraSensor::CameraSensor(Scene * const _scene, Surface * const _surface, int _
 	setResolution(_resolution_x, _resolution_y);
 }
 
-Vec3 CameraSensor::getPixelPosition(int _x, int _y) {
+Vec3 CameraSensor::getPixelPosition(int _x, int _y) const {
 	Vec3 _position = Vec3(0,0,0);
 	Surface * _surface = getSurface();
 	if (_surface == nullptr) { return _position; }
@@ -25,7 +25,8 @@ Vec3 CameraSensor::getPixelPosition(int _x, int _y) {
 	_position = _surface->getPointOnSurface(u,v);
 	return _position;
 }
-Vec3 CameraSensor::captureImageData(int _x, int _y) {
+
+Vec3 CameraSensor::captureImageData(int _x, int _y) const {
 	Vec3 _result = Vec3(0,0,0);
 
 	Surface * _surface = getSurface();
@@ -35,25 +36,24 @@ Vec3 CameraSensor::captureImageData(int _x, int _y) {
 	std::experimental::optional<Vec3> _direction = surface->getHitNorm(_position);
 
 	if (!_direction) { return _result; }
-	//std::cout << _direction.value() << std::endl;
 
 	ColorData _colorData = surface->getColorData(_position);
 
-	std::vector<Ray> _rays = generateRays(_position, _direction.value(), GLOBAL_SETTING_RAY_MAX_LIFE + 1, _colorData, GLOBAL_SETTING_RAY_SPREAD, GLOBAL_SETTING_RAY_NUM_SPAWN);
-	Vec3 result = computeRayResult();
+	std::vector<Ray> _rays = generateRays(_position, _direction.value(), GLOBAL_SETTING_RAY_MAX_LIFE + 1, _colorData, 0, 1);
+	Vec3 result = computeRayResult(_rays);
 
 	return result;
 }
 
-int CameraSensor::resolutionX() {
+int CameraSensor::resolutionX() const {
 	return resolution_x;
 }
 
-int CameraSensor::resolutionY() {
+int CameraSensor::resolutionY() const {
 	return resolution_y;
 }
 
-double CameraSensor::getDPI() {
+double CameraSensor::getDPI() const {
 	return sensor_dpi;
 }
 
@@ -76,7 +76,7 @@ void CameraSensor::setSurface(Surface * const _surface) {
 	surface = _surface;
 }
 
-Surface * CameraSensor::getSurface() {
+Surface * CameraSensor::getSurface() const {
 	return surface;
 }
 

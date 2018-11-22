@@ -16,16 +16,16 @@ class CameraSensor : public RayGenerator {
 	public:
 		CameraSensor();
 		CameraSensor(Scene * const _scene, Surface * const _surface, int _resolution_x, int _resolution_y, double _sensor_dpi);
-		Vec3 getPixelPosition(int _x, int _y);	// returns world position of pixel (x,y) on the sensor
-		Vec3 captureImageData(int _x, int _y);	// returns (R,G,B) capture result from pixel (x,y)
-		int resolutionX();
-		int resolutionY();
-		double getDPI();
+		Vec3 getPixelPosition(int _x, int _y) const;	// returns world position of pixel (x,y) on the sensor
+		Vec3 captureImageData(int _x, int _y) const;	// returns (R,G,B) capture result from pixel (x,y)
+		int resolutionX() const;
+		int resolutionY() const;
+		double getDPI() const;
 		void setResolution(int _resolution_x, int _resolution_y);
 		void setDPI(double _dpi);
 		virtual void setScene(Scene * const _scene);
 		void setSurface(Surface * const _surface);
-		Surface * getSurface();
+		Surface * getSurface() const;
 };
 
 }

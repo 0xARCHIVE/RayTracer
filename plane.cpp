@@ -39,6 +39,8 @@ std::experimental::optional<Vec3> Plane::getIntersectionPoint(const Ray& _r) {
 	double lambda = numerator/denominator;
 	Vec3 hitPos = _point + lambda*_direction;
 
+//	std::cout << "Ray " << _point << " " << _direction << " hit plane at " << hitPos << " with dist " << numerator << std::endl;
+
 	return std::experimental::optional<Vec3>(hitPos);
 }
 

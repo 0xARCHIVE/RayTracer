@@ -23,6 +23,7 @@ void File::writeImageData(const ImageData& _data) {
 
 	file << "P3\n" << _data.resolution_x << " " << _data.resolution_y << " 255\n";
 
+	int i = 0;
 	for (auto rgb : _data.RGBvalues) {
 		double r = rgb.getX()*255.0;
 		double g = rgb.getY()*255.0;
@@ -32,7 +33,9 @@ void File::writeImageData(const ImageData& _data) {
 		g = (g > 255) ? 255 : g;
 		b = (b > 255) ? 255 : b;
 
-		file << round(r) << " " << round(g) << " " << round(b) << "\n";
+		file << round(r) << "\t" << round(g) << "\t" << round(b);
+		if ((i+1) % _data.resolution_x == 0) { file << "\n"; } else { file << "\t\t"; }
+		i++;
 	}
 
 	file.close();
