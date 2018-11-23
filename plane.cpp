@@ -16,9 +16,16 @@ std::experimental::optional<IntersectData> Plane::getIntersectData(const Ray& _r
 	std::experimental::optional<Vec3> _intersectPointOpt = getIntersectionPoint(_r, testForwards, testBackwards);
 	if (!_intersectPointOpt) { return std::experimental::nullopt; }
 
+	Vec3 _point = intersectPointOpt.value();
+	Vec3 dV = (_point - getPosition());
+	Vec3 dV_width = dV*(dV.dot( right() ));
+	Vec3 dV_height = dV*(dV.dot( up() ));
+	if (dV_width().length() > getWidth() + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
+	if (dV_height().length() > getHeight() + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
+
 	IntersectData _intersectData;
 	_intersectData.surface = this;
-	_intersectData.hitPos = _intersectPointOpt.value();
+	_intersectData.hitPos = _point;
 	_intersectData.colorData = getColorData(_intersectData.hitPos);
 	_intersectData.hitNorm = getNorm();
 

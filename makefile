@@ -1,8 +1,8 @@
 # Declaration of variables
 CC = g++
 #CC_FLAGS = -Wall -Werror -Wextra -std=c++17 -g
-#CC_FLAGS = -Wall -Wextra -std=c++17 -O3
-CC_FLAGS = -Wall -Wextra -std=c++17 -g -pg # -pg might not be needed
+CC_FLAGS = -Wall -Wextra -std=c++17 -O3
+#CC_FLAGS = -Wall -Wextra -std=c++17 -g -pg # -pg might not be needed
 #CC_FLAGS = -Wall -Wextra -std=c++17 -g
 
 # File names
@@ -12,8 +12,8 @@ OBJECTS = $(SOURCES:.cpp=.o)
 
 # Main target
 $(EXEC): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(EXEC) -pg -no-pie	# profiling
-#	$(CC) $(OBJECTS) -o $(EXEC)
+#	$(CC) $(OBJECTS) -o $(EXEC) -pg -no-pie	# profiling
+	$(CC) $(OBJECTS) -o $(EXEC)
 
 # To obtain object files
 %.o: %.cpp
