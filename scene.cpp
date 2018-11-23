@@ -41,30 +41,24 @@ std::experimental::optional<IntersectData> Scene::getIntersectData(const Ray& _r
 	bool found = false;
 	for (auto object : objects) {
 		if (object == nullptr) { continue; }
+		if (!object->hasBoundingBox()) { continue; }
 		BoundingBox* bb = object->getBoundingBox();
-		if (bb == nullptr) { continue; }
 		if (!bb->canIntersectRays()) { continue; }
-		std::experimental::optional<IntersectData> intersect_opt = bb->intersect(_r);
-		// TODO ADD SURFACE INTERSECTION //
+		if (!bb->testIntersection(_r)) { continue; }
 
+		std::experimental::optional<IntersectData> intersect_opt = object->intersect(_r);
 		if (!intersect_opt) { continue; }
-		Vec3 _dir = (intersect_opt.value().hitPos - _r.getPosition());
-		double _dist = _dir.length();
-//		std::cout << intersect_opt.value().hitPos << "\t" << _r.getPosition() << "\t" << _dir << "\t" << _r.getDirection() << "\t" << _dir.dot(_r.getDirection()) << std::endl;
-		if (_dir.dot(_r.getDirection()) < 0) { // hitPos is behind the ray, ignore
-			continue;
-		}
+		Vec3 dV = (intersect_opt.value().hitPos - _r.getPosition());
+		double _dist = dV.length();
 
-		if (!found || abs(dist) > _dist + GLOBAL_SETTING_RAY_PRECISION) {
+		if (!found || dist > (_dist + GLOBAL_SETTING_RAY_PRECISION)) {
 			dist = _dist;
 			intersection = intersect_opt.value();
 			found = true;
 		}
 	}
 
-	if (found) {
-		return intersection;
-	}
+	if (found) { return intersection; }
 	return std::experimental::nullopt;
 }
 

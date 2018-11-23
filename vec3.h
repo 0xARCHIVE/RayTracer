@@ -26,6 +26,7 @@ class Vec3 {
 
 		double length() const;
 		double dot(const Vec3& v) const;
+		Vec3 abs() const;
 		Vec3 cross(const Vec3& v) const;
 		Vec3 hadamard(const Vec3& v) const;
 		Vec3 normalised() const;

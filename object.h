@@ -1,28 +1,31 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "entity.h"
+#include "boundableentity.h"
 
 #include <vector>
+#include <experimental/optional>
 
 namespace RayTracer {
 
 class BoundingBox;
+class IntersectData;
 class Surface;
 class Vec3;
 
-class Object : public Entity {
+class Object : public BoundableEntity {
 	protected:
-		BoundingBox * boundingBox;
 		std::vector<Surface *> surfaces;
 	public:
-		Object(Scene * const _scene, const Vec3& _position, const Vec3& _angle, BoundingBox * const _boundingBox);
+		Object(Scene * const _scene, const Vec3& _position, const Vec3& _angle);
+		virtual ~Object();
 		void addSurface(Surface* _surface);
 		std::vector<Surface *>& getSurfaces();
-		void setBoundingBox(BoundingBox* _boundingBox);
-		BoundingBox * getBoundingBox();
+		virtual std::vector<Vec3> getMaxCoords() const;
+		std::experimental::optional<IntersectData> intersect(const Ray& _r, bool testForwards = true, bool testBackwards = false) const;
 };
 
 }
 
 #endif
+

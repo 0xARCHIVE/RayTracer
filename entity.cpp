@@ -13,6 +13,8 @@ Entity::Entity(Scene * const _scene, const Vec3& _position, const Vec3& _angle) 
 	setScene(_scene);
 }
 
+Entity::~Entity() {}
+
 void Entity::setScene(Scene * const _scene) {
 	scene = _scene;
 

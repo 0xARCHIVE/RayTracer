@@ -3,11 +3,13 @@
 
 namespace RayTracer {
 
-Surface::Surface(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays) : Entity(_scene, _position, _angle) , RayInteractable(_canIntersectRays, _canGenerateRays) {
+Surface::Surface(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays = true, bool _canGenerateRays = true) : BoundableEntity(_scene, _position, _angle) , RayInteractable(_canIntersectRays, _canGenerateRays) {
 	ColorData colorData;
 	colorData.color = Vec3(0,0,0);
 	setColorData(colorData);
 }
+
+Surface::~Surface() {}
 
 void Surface::setColorData(const ColorData& _colorData) {
 	colorDataFunc = [=](const Vec3& _position) -> ColorData { return colorDataFuncSimple(); };
@@ -26,19 +28,8 @@ ColorData Surface::getColorData() {
 	return colorDataFunc(Vec3(0,0,0));
 }
 
-std::experimental::optional<IntersectData> Surface::intersect(const Ray& _r) {
-	std::experimental::optional<Vec3> hitPos = getIntersectionPoint(_r);
-	if (!hitPos) { return std::experimental::nullopt; }
-
-	std::experimental::optional<Vec3> hitNorm = getHitNorm(hitPos.value());
-	if (!hitNorm) { return std::experimental::nullopt; }
-
-	IntersectData intersectData;
-	intersectData.surface = this;
-	intersectData.hitPos = hitPos.value();
-	intersectData.hitNorm = hitNorm.value();
-
-	return std::experimental::optional<IntersectData>{intersectData};
+std::experimental::optional<IntersectData> Surface::intersect(const Ray& _r, bool testForwards, bool testBackwards) {
+	return (getIntersectData(_r,testForwards,testBackwards));
 }
 
 }

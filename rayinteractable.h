@@ -15,7 +15,7 @@ class RayInteractable {
 	public:
 		RayInteractable();
 		RayInteractable(bool _canIntersectRays, bool _canGenerateRays);
-		virtual std::experimental::optional<IntersectData> intersect(const Ray& _r) = 0;
+		virtual std::experimental::optional<IntersectData> intersect(const Ray& _r, bool testForwards = true, bool testBackwards = false) = 0;
 		bool canIntersectRays();
 		bool canGenerateRays();
 		void setIntersectRays(bool _canIntersectRays);

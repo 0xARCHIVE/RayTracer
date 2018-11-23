@@ -52,6 +52,10 @@ double Vec3::dot(const Vec3 &v) const {
 	return (this->getX()*v.getX() + this->getY()*v.getY() + this->getZ()*v.getZ());
 }
 
+Vec3 Vec3::abs() const {
+	return Vec3(std::abs(getX()),std::abs(getY()),std::abs(getZ()));
+}
+
 Vec3 Vec3::cross(const Vec3 &v) const {
 	Vec3 output;
 	output.setX( this->getY()*v.getZ() - this->getZ()*v.getY() );
