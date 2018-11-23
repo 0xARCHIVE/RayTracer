@@ -7,3 +7,4 @@ buildoutput
 raytracer
 gmon.out
 gprof.out
+makefile
