@@ -31,6 +31,7 @@ class Entity {
 		void setAngle(const Vec3& _angle);
 		Vec3 getPosition() const;
 		Vec3 getAngle() const;
+		Vec3 getMidpoint() const;
 		void translate(const Vec3& _vector);
 		void rotate(const Vec3& _angle);
 

@@ -1,6 +1,8 @@
 #include "plane.h"
 #include "entity.h"
 #include "consts.h"
+#include "intersectdata.h"
+#include "ray.h"
 
 #include <algorithm>
 #include <iostream>
@@ -8,20 +10,15 @@
 
 namespace RayTracer {
 
-Plane::Plane(Scene * const _scene, const Vec3& _position, const Vec3& _angle, double _width, double _height, bool _canIntersectRays = true, bool _canGenerateRays = true) : Surface(_scene, _position, _angle, _canIntersectRays, _canGenerateRays) {
+Plane::Plane(Scene * const _scene, const Vec3& _position, const Vec3& _angle, double _width, double _height, bool _canIntersectRays, bool _canGenerateRays) : Surface(_scene, _position, _angle, _canIntersectRays, _canGenerateRays) {
 	setDimensions(_width, _height);
 }
 
-std::experimental::optional<IntersectData> Plane::getIntersectData(const Ray& _r, bool testForwards = true, bool testBackwards = false) {
+std::experimental::optional<IntersectData> Plane::getIntersectData(const Ray& _r, bool testForwards, bool testBackwards) const {
 	std::experimental::optional<Vec3> _intersectPointOpt = getIntersectionPoint(_r, testForwards, testBackwards);
 	if (!_intersectPointOpt) { return std::experimental::nullopt; }
 
-	Vec3 _point = intersectPointOpt.value();
-	Vec3 dV = (_point - getPosition());
-	Vec3 dV_width = dV*(dV.dot( right() ));
-	Vec3 dV_height = dV*(dV.dot( up() ));
-	if (dV_width().length() > getWidth() + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
-	if (dV_height().length() > getHeight() + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
+	Vec3 _point = _intersectPointOpt.value();
 
 	IntersectData _intersectData;
 	_intersectData.surface = this;
@@ -32,9 +29,11 @@ std::experimental::optional<IntersectData> Plane::getIntersectData(const Ray& _r
 	return std::experimental::optional<IntersectData>(_intersectData);
 }
 
-std::experimental::optional<Vec3> Plane::getIntersectionPoint(const Ray& _r, bool testForwards = true, bool testBackwards = false) {
+std::experimental::optional<Vec3> Plane::getIntersectionPoint(const Ray& _r, bool testForwards, bool testBackwards) const {
 	Vec3 _point = _r.getPosition();
 	Vec3 _direction = _r.getDirection();
+
+	//std::cout << _point << " " << _direction << std::endl;
 
 	if (isPointInPlane(_point)) { return std::experimental::optional<Vec3>(_point); }
 
@@ -45,21 +44,27 @@ std::experimental::optional<Vec3> Plane::getIntersectionPoint(const Ray& _r, boo
 	double lambda = numerator/denominator;
 	Vec3 hitPos = _point + lambda*_direction;
 
-	Vec3 dV = (hitPos - _r.getPosition());
-	double _dot = dV.dot(_r.getDirection());
+	Vec3 dV = hitPos;
+	double dV_width = std::abs(dV.dot( right() ));
+	double dV_height = std::abs(dV.dot( forward() ));
+	//std::cout << dV << " " << dV_width << " " << dV_height << std::endl;
+	if (dV_width*2 > getWidth() + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
+	if (dV_height*2 > getHeight() + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
 
-	if (!testForwards && _dot > 0) { return std::experimental::nullopt; }
-	if (!testBackwards && _dot < 0) { return std::experimental::nullopt; }
-
+//	double _dot = dV.dot(_r.getDirection());
+//
+//	BROKEN: all testForward/backwards
+//	if (!testForwards && _dot > 0) { return std::experimental::nullopt; }
+//	if (!testBackwards && _dot < 0) { return std::experimental::nullopt; }
 	return std::experimental::optional<Vec3>(hitPos);
 }
 
-std::experimental::optional<Vec3> Plane::getHitNorm(const Vec3& _point) {
+std::experimental::optional<Vec3> Plane::getHitNorm(const Vec3& _point) const {
 	if (isPointInPlane(_point)) { return std::experimental::optional<Vec3>(getNorm()); }
 	return std::experimental::nullopt;
 }
 
-std::vector<Vec3> Plane::getBasisVectors(double u, double v) {
+std::vector<Vec3> Plane::getBasisVectors(double u, double v) const {
 	return std::vector<Vec3>{forward(),right()};
 }
 
@@ -107,10 +112,10 @@ double Plane::getHeight() const {
 
 std::vector<Vec3> Plane::getMaxCoords() const {
 	// return two corners of BB enclosing plane
-	Vec3 corner1 = toWorld(Vec3(width,height,0));
-	Vec3 corner2 = toWorld(Vec3(width,-height,0));
-	Vec3 corner3 = toWorld(Vec3(-width,height,0));
-	Vec3 corner4 = toWorld(Vec3(-width,-height,0));
+	Vec3 corner1 = toWorld(Vec3(height/2,width/2,0));
+	Vec3 corner2 = toWorld(Vec3(height/2,-width/2,0));
+	Vec3 corner3 = toWorld(Vec3(-height/2,width/2,0));
+	Vec3 corner4 = toWorld(Vec3(-height/2,-width/2,0));
 
 	double maxX = std::max( std::max(corner1.getX(),corner2.getX()), std::max(corner3.getX(),corner4.getX()) );
 	double maxY = std::max( std::max(corner1.getY(),corner2.getY()), std::max(corner3.getY(),corner4.getY()) );

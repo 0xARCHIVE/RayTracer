@@ -7,24 +7,25 @@
 namespace RayTracer {
 
 Box::Box(Scene* const _scene, const Vec3& _position, const Vec3& _angle, const Vec3& _dimensions, bool _canIntersectRays, bool _canGenerateRays) : ConvexPolygon(_scene, _position, _angle, _canIntersectRays, _canGenerateRays) {
+	planesToDelete = std::vector<Plane *>();
 	dimensions = _dimensions;
 
-	double depth = _dimensions.getX();
-	double width = _dimensions.getY();
-	double height = _dimensions.getZ();
+	double _depth = _dimensions.getX();
+	double _width = _dimensions.getY();
+	double _height = _dimensions.getZ();
 
-	Plane * p1 = new Plane(_scene, toWorld(Vec3(depth/2,0,0)), _angle + Vec3(90,0,0), width,height, _canIntersectRays, _canGenerateRays);
-	Plane * p2 = new Plane(_scene, toWorld(Vec3(-depth/2,0,0)), _angle + Vec3(-90,0,0), width,height, _canIntersectRays, _canGenerateRays);
-	Plane * p3 = new Plane(_scene, toWorld(Vec3(0,width/2,0)), _angle + Vec3(0,0,-90), depth,height, _canIntersectRays, _canGenerateRays);
-	Plane * p4 = new Plane(_scene, toWorld(Vec3(0,-width/2,0)), _angle + Vec3(0,0,90), depth,height, _canIntersectRays, _canGenerateRays);
-	Plane * p5 = new Plane(_scene, toWorld(Vec3(0,0,height/2)), _angle, _canIntersectRays, width,depth, _canGenerateRays);
-	Plane * p6 = new Plane(_scene, toWorld(Vec3(0,0,-height/2)), _angle + Vec3(0,0,180), width,depth, _canIntersectRays, _canGenerateRays);
+	Plane * p1 = new Plane(_scene, toWorld(Vec3(_depth/2,0,0)), _angle + Vec3(90,0,0), _width,_height, _canIntersectRays, _canGenerateRays);
+	Plane * p2 = new Plane(_scene, toWorld(Vec3(-_depth/2,0,0)), _angle + Vec3(-90,0,0), _width,_height, _canIntersectRays, _canGenerateRays);
+	Plane * p3 = new Plane(_scene, toWorld(Vec3(0,_width/2,0)), _angle + Vec3(0,0,-90), _depth,_height, _canIntersectRays, _canGenerateRays);
+	Plane * p4 = new Plane(_scene, toWorld(Vec3(0,-_width/2,0)), _angle + Vec3(0,0,90), _depth,_height, _canIntersectRays, _canGenerateRays);
+	Plane * p5 = new Plane(_scene, toWorld(Vec3(0,0,_height/2)), _angle, _width,_depth, _canIntersectRays, _canGenerateRays);
+	Plane * p6 = new Plane(_scene, toWorld(Vec3(0,0,-_height/2)), _angle + Vec3(0,0,180), _width,_depth, _canIntersectRays, _canGenerateRays);
 
 	// testing
 	ColorData c;
 	c.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-	c.emissivity = 0.75;
-	c.reflectivity = 0.75;
+	c.emissivity = 1;
+	c.reflectivity = 0;
 	c.transmissivity = 0;
 	c.multiplier = 1;
 
@@ -35,12 +36,12 @@ Box::Box(Scene* const _scene, const Vec3& _position, const Vec3& _angle, const V
 	ColorData c5 = c;
 	ColorData c6 = c;
 
-//	c1.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-//	c2.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-//	c3.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-//	c4.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-//	c5.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-//	c6.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
+	c1.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
+	c2.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
+	c3.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
+	c4.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
+	c5.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
+	c6.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
 
 	p1->setColorData(c1);
 	p2->setColorData(c2);
@@ -66,7 +67,9 @@ Box::Box(Scene* const _scene, const Vec3& _position, const Vec3& _angle, const V
 }
 
 Box::~Box() {
+	std::cout << "box destructor" << std::endl;
 	for (auto plane : planesToDelete) {
+		std::cout << plane << std::endl;
 		delete plane;
 	}
 	planesToDelete.clear();

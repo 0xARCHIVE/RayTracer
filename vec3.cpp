@@ -12,12 +12,20 @@ Vec3::Vec3() {
 	this->setX(0);
 	this->setY(0);
 	this->setZ(0);
+
+	this->invX = 1.0/getX();
+	this->invY = 1.0/getY();
+	this->invZ = 1.0/getZ();
 }
 
 Vec3::Vec3(double x, double y, double z) {
 	this->setX(x);
 	this->setY(y);
 	this->setZ(z);
+
+	this->invX = 1.0/x;
+	this->invY = 1.0/y;
+	this->invZ = 1.0/z;
 }
 
 double Vec3::getX() const {
@@ -30,6 +38,18 @@ double Vec3::getY() const {
 
 double Vec3::getZ() const {
 	return this->z;
+}
+
+double Vec3::getInvX() const {
+	return this->invX;
+}
+
+double Vec3::getInvY() const {
+	return this->invY;
+}
+
+double Vec3::getInvZ() const {
+	return this->invZ;
 }
 
 void Vec3::setX(double x) {

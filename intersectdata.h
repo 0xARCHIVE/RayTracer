@@ -9,7 +9,7 @@ namespace RayTracer {
 class Surface;
 
 struct IntersectData {
-	Surface* surface;
+	const Surface* surface;
 	ColorData colorData;
 	Vec3 hitPos;
 	Vec3 hitNorm;

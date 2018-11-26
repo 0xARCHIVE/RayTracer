@@ -12,6 +12,10 @@ class Vec3 {
 		double x;
 		double y;
 		double z;
+
+		double invX;
+		double invY;
+		double invZ;
 	public:
 		Vec3();
 		Vec3(double x, double y, double z);
@@ -19,6 +23,10 @@ class Vec3 {
 		double getX() const;
 		double getY() const;
 		double getZ() const;
+
+		double getInvX() const;
+		double getInvY() const;
+		double getInvZ() const;
 
 		void setX(double x);
 		void setY(double y);

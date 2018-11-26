@@ -54,6 +54,10 @@ Vec3 Entity::getAngle() const {
 	return worldQuat.toAngle();
 }
 
+Vec3 Entity::getMidpoint() const {
+	return getPosition();
+}
+
 void Entity::translate(const Vec3& _vector) {
 	setPosition(getPosition() + _vector);
 	translateChildren(_vector);

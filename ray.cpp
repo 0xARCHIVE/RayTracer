@@ -2,6 +2,7 @@
 #include "intersectdata.h"
 #include "scene.h"
 #include "consts.h"
+#include "surface.h"
 
 #include <iostream>
 #include <experimental/optional>
@@ -44,7 +45,7 @@ Vec3 Ray::computeResult() {
 	if (_hitNorm.dot(getDirection()) > 0) {  _hitNorm = -1*_hitNorm; }
 
 	ColorData _colorData = intersectData.value().colorData;
-	Surface * _surface = intersectData.value().surface;
+	const Surface * _surface = intersectData.value().surface;
 	Vec3 secondary_result(0,0,0);
 
 	if (_surface->canGenerateRays()) {

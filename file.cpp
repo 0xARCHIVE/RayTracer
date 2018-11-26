@@ -38,7 +38,6 @@ void File::writeImageData(const ImageData& _data) {
 		i++;
 	}
 
-	file.close();
-}
+	file.close();}
 
 }

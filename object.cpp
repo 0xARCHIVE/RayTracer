@@ -3,22 +3,32 @@
 #include "boundingbox.h"
 #include "consts.h"
 #include "intersectdata.h"
+#include "scene.h"
+#include "kdnode.h"
+#include "vec3.h"
+#include "ray.h"
+#include "surface.h"
 
 #include <algorithm>
 #include <iostream>
 
 namespace RayTracer {
 
-Object::Object(Scene * const _scene, const Vec3& _position, const Vec3& _angle) : BoundableEntity(_scene, _position, _angle) {
+Object::Object(Scene * const _scene, const Vec3& _position, const Vec3& _angle, bool _canIntersectRays, bool _canGenerateRays) : BoundableEntity(_scene, _position, _angle, _canIntersectRays, _canGenerateRays) {
+	kdroot = new KDNode(_scene);
 	_scene->addObject(this);
 }
 
-Object::~Object() {}
+Object::~Object() {
+	if (kdroot != nullptr) { delete kdroot; }
+}
 
 void Object::addSurface(Surface * const _surface) {
 	if (_surface == nullptr) { return; }
 	surfaces.push_back(_surface);
 	addChild(_surface);
+
+	buildKDroot();
 }
 
 std::vector<Surface *>& Object::getSurfaces() {
@@ -69,23 +79,20 @@ std::vector<Vec3> Object::getMaxCoords() const {
 }
 
 std::experimental::optional<IntersectData> Object::intersect(const Ray& _r, bool testForwards, bool testBackwards) const {
-	IntersectData result;
-	double dist = 0;
-	bool found = false;
+	return kdroot->intersect(_r,testForwards,testBackwards);
+}
 
-	for (auto surface : surfaces) {
-		std::experimental::optional<IntersectData> intersect_opt = surface->intersect(_r, testForwards, testBackwards);
-		if (!intersect_opt) { continue; }
-		Vec3 dV = (intersect_opt.value().hitPos - _r.getPosition());
-		double _dist = dV.length();
-		if (!found || dist > (_dist + GLOBAL_SETTING_RAY_PRECISION)) {
-			found = true;
-			result = intersect_opt.value();
-		}
+void Object::buildKDroot() {
+	enableAABB();
+
+	std::vector<Entity*> children = getChildren();
+	std::vector<BoundableEntity*> boundableChildren;
+	for (auto child : children) {
+		boundableChildren.push_back(static_cast<BoundableEntity*>(child));
 	}
-
-	if (!found) { return std::experimental::nullopt; }
-	return std::experimental::optional<IntersectData>(result);
+	KDNode * kdroot_new = kdroot->build(boundableChildren);
+	delete kdroot;
+	kdroot = kdroot_new;
 }
 
 }

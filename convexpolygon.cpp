@@ -1,6 +1,9 @@
 #include "convexpolygon.h"
 #include "consts.h"
 #include "ray.h"
+#include "intersectdata.h"
+#include "vec3.h"
+#include "plane.h"
 
 #include <algorithm>
 #include <iostream>
@@ -17,7 +20,7 @@ std::experimental::optional<Vec3> ConvexPolygon::getIntersectionPoint(const Ray&
 	return std::experimental::optional<Vec3>(_intersectDataOpt.value().hitPos);
 }
 
-std::experimental::optional<Vec3> ConvexPolygon::getHitNorm(const Vec3& _position) {
+std::experimental::optional<Vec3> ConvexPolygon::getHitNorm(const Vec3& _position) const {
 	for (auto plane : getPlanes()) {
 		if (plane->isPointInPlane(_position)) {
 			return std::experimental::optional<Vec3>(plane->getNorm());
@@ -26,7 +29,7 @@ std::experimental::optional<Vec3> ConvexPolygon::getHitNorm(const Vec3& _positio
 	return std::experimental::nullopt;
 }
 
-std::vector<Vec3> ConvexPolygon::getBasisVectors(double u, double v) {
+std::vector<Vec3> ConvexPolygon::getBasisVectors(double u, double v) const {
 	return std::vector<Vec3>{Vec3(0,0,0)};
 }
 
@@ -44,14 +47,14 @@ std::vector<Plane *> ConvexPolygon::getPlanes() const {
 	return planes;
 }
 
-bool ConvexPolygon::isPointInsideShape(const Vec3& _point) {
-	for (auto plane : getPlanes()) {
+bool ConvexPolygon::isPointInsideShape(const Vec3& _point) const {
+	for (const auto plane : getPlanes()) {
 		if (!plane->isPointInsidePlane(_point)) { return false; }
 	}
 	return true;
 }
 
-std::experimental::optional<IntersectData> ConvexPolygon::getIntersectData(const Ray& _r, bool testForwards = true, bool testBackwards = false) {
+std::experimental::optional<IntersectData> ConvexPolygon::getIntersectData(const Ray& _r, bool testForwards = true, bool testBackwards = false) const {
 	bool found = false;
 	double dist;
 	Plane * _plane_touching = nullptr;
@@ -68,12 +71,12 @@ std::experimental::optional<IntersectData> ConvexPolygon::getIntersectData(const
 		Vec3 dV = (_point - _r.getPosition());
 		double _dot = dV.dot(_r.getDirection());
 
-		if (!testForwards && _dot > 0) { continue; }
-		if (!testBackwards && _dot < 0) { continue; }
+//		if (!testForwards && _dot > 0) { continue; }
+//		if (!testBackwards && _dot < 0) { continue; }
 
 		double _dist = dV.length();
 
-		if (found == false || dist > (dist + GLOBAL_SETTING_RAY_PRECISION)) {	// pick intersection closest to ray
+		if (found == false || dist > (_dist + GLOBAL_SETTING_RAY_PRECISION)) {	// pick intersection closest to ray
 			found = true;
 			_plane_touching = plane;
 			_point_touching = _point;
@@ -89,7 +92,7 @@ std::experimental::optional<IntersectData> ConvexPolygon::getIntersectData(const
 	return std::experimental::nullopt;
 }
 
-std::experimental::optional<IntersectData> ConvexPolygon::getIntersectData(const Vec3& _point) {
+std::experimental::optional<IntersectData> ConvexPolygon::getIntersectData(const Vec3& _point) const {
 	// todo: find out why this function exists
 	Ray r(getScene(), _point, Vec3(0,0,1), 1);
 	return getIntersectData(r);

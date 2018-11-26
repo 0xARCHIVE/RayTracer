@@ -1,17 +1,18 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "camera.h"
-#include "object.h"
-#include "imagedata.h"
-#include "intersectdata.h"
-
 #include <experimental/optional>
 #include <functional>
 #include <string>
 #include <vector>
 
 namespace RayTracer {
+
+class Ray;
+class Camera;
+class Object;
+class ImageData;
+class IntersectData;
 
 class Scene {
 	protected:

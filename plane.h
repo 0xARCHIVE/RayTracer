@@ -13,13 +13,13 @@ class Plane : public Surface {
 		double width;
 		double height;
 	public:
-		Plane(Scene * const _scene, const Vec3& _position, const Vec3& _angle, double _width, double _height, bool _canIntersectRays, bool _canGenerateRays);
+		Plane(Scene * const _scene, const Vec3& _position, const Vec3& _angle, double _width, double _height, bool _canIntersectRays = true, bool _canGenerateRays = true);
 
-		std::experimental::optional<Vec3> getIntersectionPoint(const Ray& _r, bool testForwards, bool testBackwards);
-		virtual std::experimental::optional<Vec3> getHitNorm(const Vec3& _point);
-		virtual std::vector<Vec3> getBasisVectors(double u, double v);
+		std::experimental::optional<Vec3> getIntersectionPoint(const Ray& _r, bool testForwards = true, bool testBackwards = false) const;
+		virtual std::experimental::optional<Vec3> getHitNorm(const Vec3& _point) const override;
+		virtual std::vector<Vec3> getBasisVectors(double u, double v) const override;
 		virtual Vec3 getPointOnSurface(double u, double v);
-		virtual std::experimental::optional<IntersectData> getIntersectData(const Ray& _r, bool testForwards, bool testBackwards);
+		virtual std::experimental::optional<IntersectData> getIntersectData(const Ray& _r, bool testForwards = true, bool testBackwards = false) const override;
 
 		double distToPlane(const Vec3& _point) const;
 		double signedDistToPlane(const Vec3& _point) const;
@@ -30,7 +30,7 @@ class Plane : public Surface {
 		void setDimensions(double width, double height);
 		double getWidth() const;
 		double getHeight() const;
-		virtual std::vector<Vec3> getMaxCoords() const;
+		std::vector<Vec3> getMaxCoords() const override;
 };
 
 }

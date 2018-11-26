@@ -1,6 +1,11 @@
 #include "scene.h"
 #include "consts.h"
 #include "boundingbox.h"
+#include "ray.h"
+#include "intersectdata.h"
+#include "imagedata.h"
+#include "camera.h"
+#include "object.h"
 
 #include <iostream>
 
@@ -35,16 +40,12 @@ void Scene::captureImages() {
 }
 
 std::experimental::optional<IntersectData> Scene::getIntersectData(const Ray& _r) {
-	// TODO - boundingbox intersection tests and KD tree optimisation
 	IntersectData intersection;
 	double dist = 0;
 	bool found = false;
-	for (auto object : objects) {
+	for (auto object : getObjects()) {
 		if (object == nullptr) { continue; }
-		if (!object->hasBoundingBox()) { continue; }
-		BoundingBox* bb = object->getBoundingBox();
-		if (!bb->canIntersectRays()) { continue; }
-		if (!bb->testIntersection(_r)) { continue; }
+		if (!object->doesRayHitBB(_r)) { continue; }
 
 		std::experimental::optional<IntersectData> intersect_opt = object->intersect(_r);
 		if (!intersect_opt) { continue; }
