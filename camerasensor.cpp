@@ -1,83 +1,71 @@
-#include "consts.h"
 #include "camerasensor.h"
+#include "consts.h"
+#include "ray.h"
+#include "rayfactory.h"
 
-#include "scene.h"
 #include <experimental/optional>
-
-#include <iostream>
 
 namespace RayTracer {
 
-CameraSensor::CameraSensor() : RayGenerator(nullptr) {}
+CameraSensor::CameraSensor() {}
 
-CameraSensor::CameraSensor(Scene * const _scene, Surface * const _surface, int _resolution_x, int _resolution_y, double _sensor_dpi) : RayGenerator(_scene) {
-	setSurface(_surface);
-	setDPI(_sensor_dpi);
-	setResolution(_resolution_x, _resolution_y);
+CameraSensor::CameraSensor(std::shared_ptr<const Surface> surface, int resX, int resY, double dpi) {
+	this->rayfactory = std::make_shared<RayFactory>(surface->getScene());
+	this->setSurface(surface);
+	this->setRes(resX,resY);
+	this->setDPI(dpi);
 }
 
-Vec3 CameraSensor::getPixelPosition(int _x, int _y) const {
-	Vec3 _position = Vec3(0,0,0);
-	Surface * _surface = getSurface();
-	if (_surface == nullptr) { return _position; }
-	double u = _x/getDPI();
-	double v = _y/getDPI();
-	_position = _surface->getPointOnSurface(u,v);
-	return _position;
+void CameraSensor::setSurface(std::shared_ptr<const Surface> surface) {
+	this->surface = surface;
 }
 
-Vec3 CameraSensor::captureImageData(int _x, int _y) const {
-	Vec3 _result = Vec3(0,0,0);
-
-	Surface * _surface = getSurface();
-	if (_surface == nullptr) { return _result; }
-
-	Vec3 _position = getPixelPosition(_x,_y);
-	std::experimental::optional<Vec3> _direction = surface->getHitNorm(_position);
-
-	if (!_direction) { return _result; }
-
-	ColorData _colorData = surface->getColorData(_position);
-
-	std::vector<Ray> _rays = generateRays(_position, _direction.value(), GLOBAL_SETTING_RAY_MAX_LIFE + 1, _colorData, 0, 1);
-	Vec3 result = computeRayResult(_rays);
-
-	return result;
+std::shared_ptr<const Surface> CameraSensor::getSurface() const {
+	return this->surface;
 }
 
-int CameraSensor::resolutionX() const {
-	return resolution_x;
-}
-
-int CameraSensor::resolutionY() const {
-	return resolution_y;
+void CameraSensor::setDPI(double dpi) {
+	this->dpi = dpi;
 }
 
 double CameraSensor::getDPI() const {
-	return sensor_dpi;
+	return this->dpi;
 }
 
-void CameraSensor::setResolution(int _resolution_x, int _resolution_y) {
-	resolution_x = _resolution_x;
-	resolution_y = _resolution_y;
+void CameraSensor::setRes(int resX, int resY) {
+	this->resX = resX;
+	this->resY = resY;
 }
 
-void CameraSensor::setDPI(double _dpi) {
-	if (_dpi == 0) { _dpi = 1.0; }
-	sensor_dpi = _dpi;
+int CameraSensor::getResX() const {
+	return this->resX;
 }
 
-void CameraSensor::setScene(Scene * const _scene) {
-	RayGenerator::setScene(_scene);
-	surface->setScene(_scene);
+int CameraSensor::getResY() const {
+	return this->resY;
 }
 
-void CameraSensor::setSurface(Surface * const _surface) {
-	surface = _surface;
+Vec3 CameraSensor::captureImageData(int x, int y) const {
+	Vec3 result = Vec3(0,0,0);
+
+	Vec3 pos = this->getPixelPos(x,y);
+	std::experimental::optional<Vec3> direction = this->getSurface()->getNorm(pos);
+	if (!direction) { return result; }
+
+	ColorData color = this->getSurface()->getColor(pos);
+	std::vector<std::shared_ptr<Ray>> rays = this->rayfactory->generateRays(pos,direction.value(),GLOBAL_SETTING_RAY_MAX_LIFE + 1,color,0,1);
+
+	for (auto ray : rays) {
+		result += ray->computeResult();
+	}
+
+	return result*(1.0/rays.size());
 }
 
-Surface * CameraSensor::getSurface() const {
-	return surface;
+Vec3 CameraSensor::getPixelPos(int x, int y) const {
+	double u = x/this->getDPI();
+	double v = y/this->getDPI();
+	return this->getSurface()->getPointOnSurface(u,v);
 }
 
 }

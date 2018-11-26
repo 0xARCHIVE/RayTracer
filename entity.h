@@ -1,15 +1,28 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include "boundingbox.h"
+#include "quat.h"
+#include "vec3.h"
+
+#include <memory>
+#include <vector>
+#include <experimental/optional>
+
 namespace RayTracer {
 
-class Entity {
+class Scene;
+class Ray;
+class IntersectData;
+class KDNode;
+
+class Entity : public std::enable_shared_from_this<Entity> {
 	private:
-		std::shared_ptr<const Scene> scene;
+		std::shared_ptr<Scene> scene;
 
 		std::shared_ptr<Entity> parent;
 		std::vector<std::shared_ptr<Entity>> children;
-		KDNode kdnode;
+		std::shared_ptr<KDNode> kdnode;
 
 		Vec3 worldPos;
 		Vec3 localPos;
@@ -17,20 +30,20 @@ class Entity {
 		Quat localQuat;
 
 		BoundingBox aabb;
-		bool canIntersectRays = false;
-		bool canGenerateRays = false;
+		bool fl_canIntersectRays = false;
+		bool fl_canGenerateRays = false;
 
 		void recalculateKDtree();
 
-		void recalculateAABB();
 		void setAABB(const BoundingBox &aabb);
+		void setCorners(const Vec3 &v1, const Vec3 &v2);
 
 	public:
-		Entity(shared_ptr<const Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng);
+		Entity(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng);
 		virtual ~Entity();
 
-		void setScene(std::shared_ptr<const Scene> scene);
-		std::shared_ptr<const Scene> getScene() const;
+		void setScene(std::shared_ptr<Scene> scene);
+		std::shared_ptr<Scene> getScene() const;
 
 		void setPos(const Vec3 &worldPos);
 		void setAng(const Vec3 &worldAng);
@@ -43,12 +56,12 @@ class Entity {
 		void rotateChildren(const Vec3 &dA);
 		void rotateChildrenTo(const Vec3 &worldAng);
 
-		void childrenSnapToParent();
 		void snapToParent();
+		void childrenSnapToParent();
 
 		Vec3 getPos() const;
 		Vec3 getAng() const;
-		Vec3 getMidPoint() const;
+		virtual Vec3 getMidPoint() const;
 
 		Vec3 up() const;
 		Vec3 forward() const;
@@ -72,11 +85,13 @@ class Entity {
 		virtual std::experimental::optional<IntersectData> intersectRay(const Ray &r) const;
 		bool canIntersectRays() const;
 		bool canGenerateRays() const;
+		void setIntersectRays(bool b);
+		void setGenerateRays(bool b);
 
 		virtual std::vector<Vec3> getCorners() const;
-		void setCorners(const Vec3 &v1, const Vec3 &v2) const;
 		const BoundingBox& getAABB() const;
-		bool hasAABB() const;
+		BoundingBox& getAABB();
+		void recalculateAABB();
 };
 
 }

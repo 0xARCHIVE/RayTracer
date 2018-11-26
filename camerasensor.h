@@ -1,12 +1,19 @@
 #ifndef CAMERASENSOR_H
 #define CAMERASENSOR_H
 
+#include "surface.h"
+
+#include <memory>
+
 namespace RayTracer {
+
+class RayFactory;
+class Vec3;
 
 class CameraSensor {
 	private:
-		Surface surface;
-		RayFactory rayfactory;
+		std::shared_ptr<const Surface> surface;
+		std::shared_ptr<RayFactory> rayfactory;
 
 		int resX;
 		int resY;
@@ -16,10 +23,10 @@ class CameraSensor {
 
 	public:
 		CameraSensor();
-		CameraSensor(const Surface &surface, int resX = 0, int resY = 0, double dpi = 1);
+		CameraSensor(std::shared_ptr<const Surface> surface, int resX = 0, int resY = 0, double dpi = 1);
 
-		void setSurface(const Surface &surface);
-		const Surface& getSurface() const;
+		void setSurface(std::shared_ptr<const Surface> surface);
+		std::shared_ptr<const Surface> getSurface() const;
 
 		void setDPI(double dpi);
 		double getDPI() const;

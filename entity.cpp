@@ -1,149 +1,122 @@
 #include "entity.h"
-
-#include <experimental/optional>
+#include "scene.h"
+#include "ray.h"
+#include "intersectdata.h"
+#include "kdnode.h"
 
 namespace RayTracer {
 
-Entity::Entity(Scene * const _scene, const Vec3& _position, const Vec3& _angle) {
-	parent = nullptr;
-	scene = nullptr;
+Entity::Entity(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng) {
+	this->parent = nullptr;
 
-	setPosition(_position);
-	setAngle(_angle);
-	setScene(_scene);
+	this->setScene(scene);
+
+	this->setPos(worldPos);
+	this->setAng(worldAng);
 }
 
 Entity::~Entity() {}
 
-void Entity::setScene(Scene * const _scene) {
-	scene = _scene;
+void Entity::setScene(std::shared_ptr<Scene> scene) {
+	this->scene = scene;
 
-	for (auto child : children) {
-		child->setScene(_scene);
+	for (auto child : this->getChildren()) {
+		child->setScene(scene);
 	}
 }
 
-void Entity::setPosition(const Vec3& _position) {
-	worldPosition = _position;
-	localPosition = Vec3(0,0,0);
+std::shared_ptr<Scene> Entity::getScene() const {
+	return this->scene;
+}
 
-	if (hasParent()) {
-		localPosition = getParent()->toLocal(worldPosition);
+void Entity::setPos(const Vec3 &worldPos) {
+	this->worldPos = worldPos;
+	this->localPos = Vec3(0,0,0);
+
+	if (this->hasParent()) {
+		this->localPos = this->getParent()->toLocal(this->getPos());
+	}
+
+	this->recalculateAABB();
+	this->getScene()->recalculateKDtree();
+}
+
+void Entity::setAng(const Vec3 &worldAng) {
+	Quat q(worldAng);
+	this->worldQuat = q;
+	this->localQuat = Quat(Vec3(0,0,0));
+
+	if (this->hasParent()) {
+		this->localQuat = this->getParent()->toLocalOrientation(q);
+	}
+
+	this->recalculateAABB();
+	this->getScene()->recalculateKDtree();
+}
+
+void Entity::translate(const Vec3 &dV) {
+	this->setPos(this->getPos() + dV);
+	this->translateChildren(dV);
+}
+
+void Entity::translateChildren(const Vec3 &dV) {
+	for (auto child : this->getChildren()) {
+		child->translate(dV);
 	}
 }
 
-void Entity::setAngle(const Vec3& _angle) {
-	Quat q(_angle);
-	worldQuat = q;
-	localQuat = Quat(Vec3(0,0,0));
-
-	if (hasParent()) {
-		localQuat = getParent()->toLocalOrientation(q);
+void Entity::translateChildrenTo(const Vec3 &dV) {
+	for (auto child : this->getChildren()) {
+		child->setPos(dV);
 	}
 }
 
-Scene* Entity::getScene() const {
-	return scene;
+void Entity::rotate(const Vec3 &dA) {
+	this->setAng(this->getAng() + dA);
+	this->childrenSnapToParent();
 }
 
-Vec3 Entity::getPosition() const {
-	return worldPosition;
-}
-
-Vec3 Entity::getAngle() const {
-	return worldQuat.toAngle();
-}
-
-Vec3 Entity::getMidpoint() const {
-	return getPosition();
-}
-
-void Entity::translate(const Vec3& _vector) {
-	setPosition(getPosition() + _vector);
-	translateChildren(_vector);
-}
-
-void Entity::rotate(const Vec3& _angle) {
-	setAngle(getAngle() + _angle);
-	childrenSnapToParent();
-}
-
-void Entity::translateChildrenTo(const Vec3& _vector) {
-	for (auto child : children) {
-		child->setPosition(_vector);
+void Entity::rotateChildren(const Vec3 &dA) {
+	for (auto child : this->getChildren()) {
+		child->rotate(dA);
 	}
 }
 
-void Entity::translateChildren(const Vec3& _vector) {
-	for (auto child : children) {
-		child->translate(_vector);
-	}
-}
-
-void Entity::rotateChildrenTo(const Vec3& _angle) {
-	for (auto child : children) {
-		child->setAngle(_angle);
-	}
-}
-
-void Entity::rotateChildren(const Vec3& _angle) {
-	for (auto child : children) {
-		child->rotate(_angle);
-	}
-}
-
-void Entity::childrenSnapToParent() {
-	for (auto child : children) {
-		child->snapToParent();
+void Entity::rotateChildrenTo(const Vec3 &dA) {
+	for (auto child : this->getChildren()) {
+		child->setAng(dA);
 	}
 }
 
 void Entity::snapToParent() {
-	// recalculate worldPos and worldQuat
-	if (!hasParent()) { return; }
-	worldPosition = getParent()->toWorld(localPosition);
-	worldQuat = getParent()->toWorldOrientation(localQuat);
+	if (!this->hasParent()) { return; }
+	this->worldPos = this->getParent()->toWorld(this->localPos);
+	this->worldQuat = this->getParent()->toWorldOrientation(this->localQuat);
 }
 
-bool Entity::hasParent() const {
-	if (nullptr == parent) { return false; }
-	return true;
+void Entity::childrenSnapToParent() {
+	for (auto child : this->getChildren()) {
+		child->snapToParent();
+	}
 }
 
-Entity* Entity::getParent() const {
-	return parent;
+Vec3 Entity::getPos() const {
+	return this->worldPos;
 }
 
-bool Entity::hasChildren() const {
-	if (children.size() > 0) { return true; }
-	return false;
+Vec3 Entity::getAng() const {
+	return this->worldQuat.toAngle();
 }
 
-std::vector<Entity*> Entity::getChildren() {
-	return children;
-}
+Vec3 Entity::getMidPoint() const {
+	if (!this->hasChildren()) { return this->getPos(); }
 
-void Entity::addChild(Entity * const _child, bool dontCallAgain) {
-	if (_child == nullptr) { return; }
-	if (_child->hasParent()) { return; }
+	Vec3 midPoint(0,0,0);
+	for (auto child : this->getChildren()) {
+		midPoint += child->getPos();
+	}
 
-	children.push_back(_child);
-
-	if (dontCallAgain) { return; }	// prevents looping
-	_child->setParent(this, true);
-}
-
-void Entity::setParent(Entity * const _parent, bool dontCallAgain) {
-	if (hasParent()) { return; }
-	if (_parent == nullptr) { return; }
-
-	parent = _parent;
-
-	localQuat = parent->toLocalOrientation(worldQuat);
-	localPosition = getParent()->toLocal(worldPosition);
-
-	if (dontCallAgain) { return; }	// prevents looping
-	_parent->addChild(this, true);
+	return midPoint*(1.0/this->getChildren().size());
 }
 
 Vec3 Entity::up() const {
@@ -158,36 +131,139 @@ Vec3 Entity::right() const {
 	return toWorldOrientation(Vec3(0,1,0));
 }
 
-Vec3 Entity::toWorld(const Vec3& _vector) const {
-	// transforms _vector out of our vectorspace
-	return toWorldOrientation(_vector) + worldPosition;
+Vec3 Entity::toWorld(const Vec3 &v) const {
+	return toWorldOrientation(v) + this->getPos();
 }
 
-Vec3 Entity::toWorldOrientation(const Vec3& _vector) const {
-	// transforms _vector out of our vectorspace without translating
-	return _vector.rotate(worldQuat);
+Vec3 Entity::toWorldOrientation(const Vec3 &v) const {
+	return v.rotate(this->worldQuat);
 }
 
-Quat Entity::toWorldOrientation(const Quat& _q) const {
-	// transforms _q out of our vectorspace without translating
-	return (_q*worldQuat);
+Quat Entity::toWorldOrientation(const Quat &q) const {
+	return (q*this->worldQuat);
 }
 
-Vec3 Entity::toLocal(const Vec3& _vector) const {
-	// transforms _vector into our vectorspace
-	Vec3 v = _vector - worldPosition;
-	return toLocalOrientation(v);
+Vec3 Entity::toLocal(const Vec3 &v) const {
+	Vec3 dV = v - this->getPos();
+	return this->toLocalOrientation(dV);
 }
 
-Vec3 Entity::toLocalOrientation(const Vec3& _vector) const {
-	// transforms _vector into our vectorspace without translating
-	return _vector.rotate(worldQuat.conjugate());
+Vec3 Entity::toLocalOrientation(const Vec3 &v) const {
+	return v.rotate(this->worldQuat.conjugate());
 }
 
-Quat Entity::toLocalOrientation(const Quat& _q) const {
-	// transforms _q into our vectorspace without translating
-	// https://stackoverflow.com/a/22167097/4000963
-	return _q*worldQuat.conjugate();
+Quat Entity::toLocalOrientation(const Quat &q) const {
+	return q*this->worldQuat.conjugate();
+}
+
+bool Entity::hasParent() const {
+	return (nullptr != this->getParent());
+}
+
+bool Entity::hasChildren() const {
+	return (children.size() > 0);
+}
+
+std::shared_ptr<Entity> Entity::getParent() const {
+	return this->parent;
+}
+
+std::vector<std::shared_ptr<Entity>> Entity::getChildren() const {
+	return this->children;
+}
+
+void Entity::setParent(std::shared_ptr<Entity> parent, bool dontCallAgain) {
+	if (this->hasParent()) { return; }
+	if (parent == nullptr) { return; }
+
+	this->parent = parent;
+
+	this->localQuat = parent->toLocalOrientation(this->worldQuat);
+	this->localPos = this->getParent()->toLocal(this->getPos());
+
+	// could cause issues: https://stackoverflow.com/questions/11711034/stdshared-ptr-of-this
+	if (dontCallAgain) { return; }
+//	parent->addChild(this,true);
+	// TODO: FIX (weak ptr?)
+}
+
+void Entity::addChild(std::shared_ptr<Entity> child, bool dontCallAgain) {
+	if (child == nullptr) { return; }
+	if (child->hasParent()) { return; }
+
+	this->children.push_back(child);
+	this->recalculateAABB();
+
+	if (!dontCallAgain) { return; }
+//	child->setParent(this,true);
+	// todo: fix
+}
+
+std::experimental::optional<IntersectData> Entity::intersectRay(const Ray &r) const {
+	return this->kdnode->intersectRay(r);
+}
+
+bool Entity::canIntersectRays() const {
+	return this->fl_canIntersectRays;
+}
+
+bool Entity::canGenerateRays() const {
+	return this->fl_canGenerateRays;
+}
+
+void Entity::setIntersectRays(bool b) {
+	this->fl_canIntersectRays = b;
+}
+
+void Entity::setGenerateRays(bool b) {
+	this->fl_canGenerateRays = b;
+}
+
+std::vector<Vec3> Entity::getCorners() const {
+	return this->getAABB().getCorners();
+}
+
+void Entity::setCorners(const Vec3 &v1, const Vec3 &v2) {
+	return this->getAABB().setCorners(v1,v2);
+}
+
+const BoundingBox& Entity::getAABB() const {
+	return (this->aabb);
+}
+
+BoundingBox& Entity::getAABB() {
+	return (this->aabb);
+}
+
+void Entity::recalculateKDtree() {
+	this->kdnode = kdnode->build(this->getChildren());
+}
+
+void Entity::recalculateAABB() {
+	Vec3 AABBmin(0,0,0);
+	Vec3 AABBmax(0,0,0);
+
+	for (auto child : this->getChildren()) {
+		child->recalculateAABB();
+
+		std::vector<Vec3> corners = child->getCorners();
+		Vec3 v1 = corners[0];
+		Vec3 v2 = corners[0];
+
+		AABBmin.setX( std::min( std::min(v1.getX(),v2.getX()), AABBmin.getX() ));
+		AABBmin.setY( std::min( std::min(v1.getY(),v2.getY()), AABBmin.getY() ));
+		AABBmin.setZ( std::min( std::min(v1.getZ(),v2.getZ()), AABBmin.getZ() ));
+
+		AABBmax.setX( std::max( std::max(v1.getX(),v2.getX()), AABBmax.getX() ));
+		AABBmax.setY( std::max( std::max(v1.getY(),v2.getY()), AABBmax.getY() ));
+		AABBmax.setZ( std::max( std::max(v1.getZ(),v2.getZ()), AABBmax.getZ() ));
+	}
+
+	this->getAABB().setCorners(AABBmin,AABBmax);
+}
+
+void Entity::setAABB(const BoundingBox &aabb) {
+	this->getAABB().copy(aabb);
 }
 
 }

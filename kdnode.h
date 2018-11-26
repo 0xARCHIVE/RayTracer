@@ -1,7 +1,16 @@
 #ifndef KDNODE_H
 #define KDNODE_H
 
+#include "entity.h"
+#include "boundingbox.h"
+
+#include <memory>
+#include <vector>
+#include <experimental/optional>
+
 namespace RayTracer {
+
+class IntersectData;
 
 class KDNode {
 	private:
@@ -12,8 +21,8 @@ class KDNode {
 
 		BoundingBox aabb;
 
-		void recalculateAABB();
 		void setAABB(const BoundingBox &aabb);
+		void recalculateAABB();
 	public:
 		KDNode();
 		~KDNode();
@@ -27,7 +36,6 @@ class KDNode {
 		void setEnts(const std::vector<std::shared_ptr<Entity>>& ents);
 
 		const BoundingBox& getAABB() const;
-		bool hasAABB() const;
 
 		std::shared_ptr<KDNode> build(const std::vector<std::shared_ptr<Entity>>& ents);
 		std::experimental::optional<IntersectData> intersectRay(const Ray& _r) const;

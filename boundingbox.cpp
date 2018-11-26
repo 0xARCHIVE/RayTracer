@@ -1,64 +1,60 @@
 #include "boundingbox.h"
 #include "ray.h"
-#include "vec3.h"
 #include "intersectdata.h"
+#include "entity.h"
 
-#include <iostream>
 #include <cmath>
 
 namespace RayTracer {
 
-BoundingBox::BoundingBox(Scene * const _scene, const Vec3& _position, const Vec3& _dimensions) : RayInteractable(_scene, _position, Vec3(0,0,0), true, false) {
-	setDimensions(_dimensions);
+BoundingBox::BoundingBox(const Vec3 &worldPos, const Vec3 &dimensions) {
+	this->setPos(worldPos);
+	this->setDimensions(dimensions);
 }
 
-BoundingBox::~BoundingBox() {}
+void BoundingBox::setPos(const Vec3 &worldPos) {
+	this->worldPos = worldPos;
+	this->minCorner = this->getPos() - this->getDimensions()*0.5;
+	this->maxCorner = this->getPos() + this->getDimensions()*0.5;
+}
+
+Vec3 BoundingBox::getPos() const {
+	return this->worldPos;
+}
 
 Vec3 BoundingBox::getDimensions() const {
-	return dimensions;
+	return this->dimensions;
 }
 
-void BoundingBox::setPosition(const Vec3& _position) {
-	min = _position - (dimensions*0.5);
-	max = _position + (dimensions*0.5);
-	return Entity::setPosition(_position);
+void BoundingBox::setDimensions(const Vec3 &dimensions) {
+	this->dimensions = dimensions;
+	this->setPos(this->getPos());
 }
 
-void BoundingBox::setDimensions(const Vec3& _dimensions) {
-	dimensions = _dimensions;
-
-	min = getPosition() - (dimensions*0.5);
-	max = getPosition() + (dimensions*0.5);
+std::vector<Vec3> BoundingBox::getCorners() const {
+	return std::vector<Vec3>{ this->minCorner, this->maxCorner };
 }
 
-bool BoundingBox::testIntersection(const Ray& r, bool testForwards, bool testBackwards) {
-	if (!canIntersectRays()) { return false; }
-	if (intersect(r,testForwards,testBackwards)) { return true; }
-	return false;
+void BoundingBox::setCorners(const Vec3 &v1, const Vec3 &v2) {
+	Vec3 AABBmin(0,0,0);
+	Vec3 AABBmax(0,0,0);
+
+	AABBmin.setX( std::min( std::min(v1.getX(),v2.getX()), AABBmin.getX() ));
+	AABBmin.setY( std::min( std::min(v1.getY(),v2.getY()), AABBmin.getY() ));
+	AABBmin.setZ( std::min( std::min(v1.getZ(),v2.getZ()), AABBmin.getZ() ));
+
+	AABBmax.setX( std::max( std::max(v1.getX(),v2.getX()), AABBmax.getX() ));
+	AABBmax.setY( std::max( std::max(v1.getY(),v2.getY()), AABBmax.getY() ));
+	AABBmax.setZ( std::max( std::max(v1.getZ(),v2.getZ()), AABBmax.getZ() ));
+
+	this->minCorner = AABBmin;
+	this->maxCorner = AABBmax;
+
+	this->dimensions = (AABBmax - AABBmin);
+	this->worldPos = (AABBmax + AABBmin)*0.5;
 }
 
-void BoundingBox::expand(BoundingBox * const bb) {
-	Vec3 bbDim = bb->getDimensions();
-	Vec3 bbPos = bb->getPosition();
-	Vec3 bbMax = bbPos + 0.5*bbDim;
-	Vec3 bbMin = bbPos - 0.5*bbDim;
-
-	double maxX = std::max(max.getX(),bbMax.getX());
-	double maxY = std::max(max.getY(),bbMax.getY());
-	double maxZ = std::max(max.getZ(),bbMax.getZ());
-
-	double minX = std::min(min.getX(),bbMin.getX());
-	double minY = std::min(min.getY(),bbMin.getY());
-	double minZ = std::min(min.getZ(),bbMin.getZ());
-
-	Vec3 newMax(maxX,maxY,maxZ);
-	Vec3 newMin(minX,minY,minZ);
-
-	setPosition(0.5*Vec3(maxX + minX, maxY + minY, maxZ + minZ));
-	setDimensions(Vec3(maxX - minX, maxY - minY, maxZ - minZ));
-}
-
-int BoundingBox::longestAxis() const {
+int BoundingBox::getLongestAxis() const {
 	// returns: 0 = x, 1 = y, 2 = z
 	if (dimensions.getX() > dimensions.getY() && dimensions.getX() > dimensions.getZ()) { return 0; }
 	if (dimensions.getY() > dimensions.getX() && dimensions.getY() > dimensions.getZ()) { return 1; }
@@ -66,32 +62,59 @@ int BoundingBox::longestAxis() const {
 	return 0;
 }
 
-BoundingBox * BoundingBox::copy() const {
-	BoundingBox * bb = new BoundingBox(getScene(),getPosition(),getDimensions());
-	return bb;
+void BoundingBox::expandToInclude(const BoundingBox &aabb) {
+	std::vector<Vec3> corners = this->getCorners();
+	std::vector<Vec3> AABBcorners = aabb.getCorners();
+
+	Vec3 AABBv1 = AABBcorners[0];
+	Vec3 AABBv2 = AABBcorners[1];
+	Vec3 v1 = corners[0];
+	Vec3 v2 = corners[1];
+
+	Vec3 AABBmax(0,0,0);
+	Vec3 AABBmin(0,0,0);
+
+	AABBmin.setX( std::min( std::min(AABBv1.getX(),AABBv2.getX()), std::min(v1.getX(), v2.getX()) ));
+	AABBmin.setY( std::min( std::min(AABBv1.getX(),AABBv2.getX()), std::min(v1.getX(), v2.getY()) ));
+	AABBmin.setZ( std::min( std::min(AABBv1.getX(),AABBv2.getX()), std::min(v1.getX(), v2.getZ()) ));
+
+	AABBmax.setX( std::max( std::max(AABBv1.getX(),AABBv2.getX()), std::max(v1.getX(), v2.getX()) ));
+	AABBmax.setY( std::max( std::max(AABBv1.getX(),AABBv2.getX()), std::max(v1.getX(), v2.getY()) ));
+	AABBmax.setZ( std::max( std::max(AABBv1.getX(),AABBv2.getX()), std::max(v1.getX(), v2.getZ()) ));
+
+	this->setCorners(AABBmin,AABBmax);
 }
 
-std::vector<Vec3> BoundingBox::getMaxCoords() const {
-	return std::vector<Vec3>{min,max};
+void BoundingBox::expandToInclude(const std::vector<std::shared_ptr<Entity>>& ents) {
+	for (auto ent : ents) {
+		this->expandToInclude(ent->getAABB());
+	}
 }
 
-std::experimental::optional<IntersectData> BoundingBox::intersect(const Ray& r, bool testForwards, bool testBackwards) const {
+void BoundingBox::copy(const BoundingBox &aabb) {
+	std::vector<Vec3> corners = aabb.getCorners();
+	this->setCorners(corners[0],corners[1]);
+}
+
+std::experimental::optional<IntersectData> BoundingBox::intersectRay(const Ray &r) const {
 	// https://tavianator.com/fast-branchless-raybounding-box-intersections-part-2-nans/
-	// todo: forwards/backwards
+	std::vector<Vec3> corners = this->getCorners();
+	Vec3 min = corners[0];
+	Vec3 max = corners[1];
 
-	double t1 = (min.getX() - r.getPosition().getX())*r.getDirection().getInvX();
-	double t2 = (max.getX() - r.getPosition().getX())*r.getDirection().getInvX();
+	double t1 = (min.getX() - r.getPos().getX())*r.getDirection().getInvX();
+	double t2 = (max.getX() - r.getPos().getX())*r.getDirection().getInvX();
 
 	double tmin = std::min(t1,t2);
 	double tmax = std::max(t1,t2);
 
-        t1 = (min.getY() - r.getPosition().getY())*r.getDirection().getInvY();
-        t2 = (max.getY() - r.getPosition().getY())*r.getDirection().getInvY();
+        t1 = (min.getY() - r.getPos().getY())*r.getDirection().getInvY();
+        t2 = (max.getY() - r.getPos().getY())*r.getDirection().getInvY();
         tmin = std::max(tmin, std::min(std::min(t1, t2), tmax));
         tmax = std::min(tmax, std::max(std::max(t1, t2), tmin));
 
-        t1 = (min.getZ() - r.getPosition().getZ())*r.getDirection().getInvZ();
-        t2 = (max.getZ() - r.getPosition().getZ())*r.getDirection().getInvZ();
+        t1 = (min.getZ() - r.getPos().getZ())*r.getDirection().getInvZ();
+        t2 = (max.getZ() - r.getPos().getZ())*r.getDirection().getInvZ();
         tmin = std::max(tmin, std::min(std::min(t1, t2), tmax));
         tmax = std::min(tmax, std::max(std::max(t1, t2), tmin));
 

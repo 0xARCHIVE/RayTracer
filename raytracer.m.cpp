@@ -1,35 +1,30 @@
 #include "scene.h"
+#include "entity.h"
 #include "box.h"
-#include "object.h"
-#include "boundingbox.h"
-#include "vec3.h"
-#include "ray.h"
 #include "colordata.h"
-#include "plane.h"
-#include "quat.h"
-#include "file.h"
-#include "camerasensor.h"
 #include "camera.h"
+#include "plane.h"
+#include "camerasensor.h"
+#include "vec3.h"
+#include "file.h"
 
-#include <cmath>
 #include <iostream>
-#include <experimental/optional>
 
 using namespace RayTracer;
 
 int main() {
-	Scene scene;
+	std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 
 	// test objects
-	Object obj1(&scene, Vec3(0,0,0), Vec3(0,0,0));
+	Entity obj1(scene, Vec3(0,0,0), Vec3(0,0,0));
 
-	Box box1(&scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(50,50,50));
-	Box box2(&scene, Vec3(0,0,0), Vec3(45,45,45), Vec3(100,100,1));
-	Box box3(&scene, Vec3(0,0,0), Vec3(-45,45,45), Vec3(100,100,1));
+	std::shared_ptr<Box> box1 = std::make_shared<Box>(scene, Vec3(0,0,0), Vec3(0,0,0), Vec3(50,50,50));
+	std::shared_ptr<Box> box2 = std::make_shared<Box>(scene, Vec3(0,0,0), Vec3(45,45,45), Vec3(100,100,1));
+	std::shared_ptr<Box> box3 = std::make_shared<Box>(scene, Vec3(0,0,0), Vec3(-45,45,45), Vec3(100,100,1));
 
-	obj1.addSurface(&box1);
-	obj1.addSurface(&box2);
-	obj1.addSurface(&box3);
+	obj1.addChild(box1);
+	obj1.addChild(box2);
+	obj1.addChild(box3);
 	//
 
 	ColorData colorData;
@@ -40,8 +35,8 @@ int main() {
 	colorData.multiplier = 1;
 
 	Vec3 camPos = Vec3(-100,0,100);
-	Plane surface(&scene, camPos, Vec3(135,10,0), 0,0, true,false);
-	surface.setColorData(colorData);
+	std::shared_ptr<Plane> surface = std::make_shared<Plane>(scene, camPos, Vec3(135,10,0),0,0);
+	surface->setColor(colorData);
 
 //	Plane* plane = box1.getPlanes()[0];
 //	Ray r(&scene,Vec3(0,0,5+1.2),Vec3(1,0.25,-0.25),1);
@@ -67,8 +62,8 @@ int main() {
 //	std::cout << c.reflectivity << std::endl;
 
 
-	CameraSensor sensor(&scene, &surface, 200,200, 1);
-	Camera cam(&scene, &sensor);
+	CameraSensor sensor(surface, 200,200, 1);
+	Camera cam(sensor);
 //	cam.captureImage();
 	std::cout << "Capture took " << cam.getRunDuration() << "s" << std::endl;
 

@@ -2,14 +2,14 @@
 #define INTERSECTDATA_H
 
 #include "colordata.h"
-#include "vec3.h"
 
 namespace RayTracer {
 
 class Surface;
+class Vec3;
 
 struct IntersectData {
-	const Surface* surface;
+	const Surface * surface;
 	ColorData colorData;
 	Vec3 hitPos;
 	Vec3 hitNorm;
