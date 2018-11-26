@@ -1,22 +1,17 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "convexpolygon.h"
-
-#include <experimental/optional>
-
 namespace RayTracer {
 
-class Ray;
-class Vec3;
-
 class Box : public ConvexPolygon {
-	protected:
-		std::vector<Plane *> planesToDelete;
+	private:
 		Vec3 dimensions;
 	public:
-		Box(Scene * const _scene, const Vec3& _position, const Vec3& _angle, const Vec3& _dimensions, bool _canIntersectRays = true, bool _canGenerateRays = true);
+		Box(std::shared_ptr<const Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng, const Vec3 &dimensions);
 		virtual ~Box();
+
+		void setDimensions(const Vec3 &dimensions);
+		Vec3 getDimensions() const;
 };
 
 }

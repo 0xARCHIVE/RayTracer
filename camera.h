@@ -1,27 +1,25 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "entity.h"
-#include "imagedata.h"
-#include "camerasensor.h"
-
-#include <ctime>
-
 namespace RayTracer {
 
-class Camera : public Entity {
-	protected:
-		CameraSensor * cameraSensor;
+class Camera {
+	private:
+		CameraSensor sensor;
 		ImageData capturedImage;
+
 		std::clock_t startTime;
 		double runDuration;
+
 	public:
-		Camera(Scene * const _scene, CameraSensor * const _cameraSensor);
-		void setCameraSensor(CameraSensor * const _cameraSensor);
-		CameraSensor * getCameraSensor();
+		Camera(const CameraSensor &sensor);
+
+		void setSensor(const CameraSensor &sensor);
+		const CameraSensor& getSensor() const;
+
 		void captureImage();
-		ImageData& getCapturedImage();
-		virtual void setScene(Scene * const _scene);
+		const ImageData& getCapturedImage() const;
+
 		double getRunDuration() const;
 };
 

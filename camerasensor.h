@@ -1,31 +1,34 @@
 #ifndef CAMERASENSOR_H
 #define CAMERASENSOR_H
 
-#include "surface.h"
-#include "raygenerator.h"
-#include "surface.h"
-
 namespace RayTracer {
 
-class CameraSensor : public RayGenerator {
-	protected:
-		Surface* surface;
-		int resolution_x;
-		int resolution_y;
-		double sensor_dpi;
+class CameraSensor {
+	private:
+		Surface surface;
+		RayFactory rayfactory;
+
+		int resX;
+		int resY;
+		double dpi;
+
+		Vec3 getPixelPos(int x, int y) const;
+
 	public:
 		CameraSensor();
-		CameraSensor(Scene * const _scene, Surface * const _surface, int _resolution_x, int _resolution_y, double _sensor_dpi);
-		Vec3 getPixelPosition(int _x, int _y) const;	// returns world position of pixel (x,y) on the sensor
-		Vec3 captureImageData(int _x, int _y) const;	// returns (R,G,B) capture result from pixel (x,y)
-		int resolutionX() const;
-		int resolutionY() const;
+		CameraSensor(const Surface &surface, int resX = 0, int resY = 0, double dpi = 1);
+
+		void setSurface(const Surface &surface);
+		const Surface& getSurface() const;
+
+		void setDPI(double dpi);
 		double getDPI() const;
-		void setResolution(int _resolution_x, int _resolution_y);
-		void setDPI(double _dpi);
-		virtual void setScene(Scene * const _scene);
-		void setSurface(Surface * const _surface);
-		Surface * getSurface() const;
+
+		void setRes(int resX, int resY);
+		int getResX() const;
+		int getResY() const;
+
+		Vec3 captureImageData(int x, int y) const;
 };
 
 }

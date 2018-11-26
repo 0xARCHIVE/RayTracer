@@ -1,36 +1,29 @@
 #ifndef BOUNDINGBOX_H
 #define BOUNDINGBOX_H
 
-#include "entity.h"
-#include "rayinteractable.h"
-
-#include <experimental/optional>
-
 namespace RayTracer {
 
-class Ray;
-class Vec3;
-class IntersectData;
-
-class BoundingBox : public RayInteractable {
-	protected:
+class BoundingBox {
+	private:
 		Vec3 dimensions;
-		Vec3 min;
-		Vec3 max;
+		Vec3 minCorner;
+		Vec3 maxCorner;
 
 	public:
-		BoundingBox(Scene * const _scene, const Vec3& _position,  const Vec3& _dimensions);
-		virtual ~BoundingBox();
+		BoundingBox(const Vec3 &worldPos,  const Vec3 &dimensions);
 
-		void setPosition(const Vec3& _position);
+		void setPos(const Vec3 &worldPos);
+
 		Vec3 getDimensions() const;
-		void setDimensions(const Vec3& _dimensions);
-		bool testIntersection(const Ray& r, bool testForwards = true, bool testBackwards = false);
-		void expand(BoundingBox * const bb);
-		int longestAxis() const;
-		BoundingBox * copy() const;
-		virtual std::vector<Vec3> getMaxCoords() const;
-		virtual std::experimental::optional<IntersectData> intersect(const Ray& r, bool testForwards = true, bool testBackwards = false) const override;
+		void setDimensions(const Vec3 &dimensions);
+
+		std::vector<Vec3> getCorners() const;
+
+		int getLongestAxis() const;
+		void expandToInclude(const BoundingBox &aabb);
+		void copy(const BoundingBox &aabb);
+
+		std::experimental::optional<IntersectData> intersectRay(const Ray &r) const;
 };
 
 }

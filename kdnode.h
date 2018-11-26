@@ -1,27 +1,36 @@
 #ifndef KDNODE_H
 #define KDNODE_H
 
-#include "boundableentity.h"
-
-#include <vector>
-#include <experimental/optional>
-
 namespace RayTracer {
 
-class IntersectData;
-class BoundingBox;
-class Scene;
+class KDNode {
+	private:
+		std::vector<std::shared_ptr<Entity>> ents;
 
-class KDNode : public BoundableEntity {
+		std::shared_ptr<KDNode> left;
+		std::shared_ptr<KDNode> right;
+
+		BoundingBox aabb;
+
+		void recalculateAABB();
+		void setAABB(const BoundingBox &aabb);
 	public:
-		KDNode * left;
-		KDNode * right;
-		std::vector<BoundableEntity *> ents;
-
-		KDNode(Scene * const_scene);
+		KDNode();
 		~KDNode();
-		KDNode * build(const std::vector<BoundableEntity *>& ents);
-		virtual std::experimental::optional<IntersectData> intersect(const Ray& _r, bool testForwards = true, bool testBackwards = false) const override;
+
+		std::shared_ptr<KDNode> getLeft() const;
+		std::shared_ptr<KDNode> getRight() const;
+		void setLeft(std::shared_ptr<KDNode> left);
+		void setRight(std::shared_ptr<KDNode> right);
+
+		const std::vector<std::shared_ptr<Entity>>& getEnts() const;
+		void setEnts(const std::vector<std::shared_ptr<Entity>>& ents);
+
+		const BoundingBox& getAABB() const;
+		bool hasAABB() const;
+
+		std::shared_ptr<KDNode> build(const std::vector<std::shared_ptr<Entity>>& ents);
+		std::experimental::optional<IntersectData> intersectRay(const Ray& _r) const;
 };
 
 }

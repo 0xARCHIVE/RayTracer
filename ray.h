@@ -1,21 +1,26 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "raygenerator.h"
-
 namespace RayTracer {
 
-class Scene;
-class Ray : public RayGenerator {
-	protected:
+class Ray {
+	private:
+		std::shared_ptr<const Scene> scene;
+		RayFactory rayfactory;
+
+		Vec3 worldPos;
+		Vec3 worldDir;
+
 		int life_left;
+		ColorData color;
 	public:
-		ColorData colorData;	// make private again
-		Ray(Scene * const _scene, const Vec3& _position, const Vec3& _direction, int _life_left);
-		Ray(Scene * const _scene, const Vec3& _position, const Vec3& _direction, int _life_left, ColorData _colorData);
-		Vec3 computeResult();
+		Ray(std::shared_ptr<const Scene> scene, const Vec3 &worldPos, const Vec3 & worldDir, int _life_left);
+		Ray(std::shared_ptr<const Scene> scene, const Vec3 &worldPos, const Vec3 & worldDir, int _life_left, ColorData color);
+
 		Vec3 getDirection() const;
 		int lifeLeft();
+
+		Vec3 computeResult();
 };
 
 }
