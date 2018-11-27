@@ -6,7 +6,7 @@
 
 namespace RayTracer {
 
-Plane::Plane(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 & worldAng, double width, double height) : Surface(scene, worldPos, worldAng) {
+Plane::Plane(const Vec3 &worldPos, const Vec3 & worldAng, double width, double height) : Surface(worldPos, worldAng) {
 	this->setDimensions(width, height);
 }
 

@@ -34,6 +34,7 @@ class BoundingBox {
 
 		int getLongestAxis() const;
 		void expandToInclude(const BoundingBox &aabb);
+		void expandToInclude(const Vec3 &corner1, const Vec3 &corner2);
 		void expandToInclude(const std::vector<std::shared_ptr<Entity>>& ents);
 		void copy(const BoundingBox &aabb);
 

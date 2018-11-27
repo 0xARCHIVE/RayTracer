@@ -5,7 +5,7 @@
 
 namespace RayTracer {
 
-ConvexPolygon::ConvexPolygon(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng) : Surface(scene, worldPos, worldAng) {
+ConvexPolygon::ConvexPolygon(const Vec3 &worldPos, const Vec3 &worldAng) : Surface(worldPos, worldAng) {
 	this->planes = std::vector<std::shared_ptr<Plane>>();
 }
 

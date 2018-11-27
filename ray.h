@@ -13,7 +13,7 @@ class Scene;
 
 class Ray {
 	private:
-		std::shared_ptr<Scene> scene;
+		Scene * scene;
 		std::shared_ptr<RayFactory> rayfactory;
 
 		Vec3 worldPos;
@@ -22,8 +22,8 @@ class Ray {
 		int life_left;
 		ColorData color;
 	public:
-		Ray(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left);
-		Ray(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left, ColorData color);
+		Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left);
+		Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left, ColorData color);
 
 		Vec3 getPos() const;
 		Vec3 getDirection() const;

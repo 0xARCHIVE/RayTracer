@@ -6,10 +6,9 @@
 
 namespace RayTracer {
 
-Entity::Entity(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng) {
+Entity::Entity(const Vec3 &worldPos, const Vec3 &worldAng) {
+	this->scene = nullptr;
 	this->parent = nullptr;
-
-	this->setScene(scene);
 
 	this->setPos(worldPos);
 	this->setAng(worldAng);
@@ -17,7 +16,7 @@ Entity::Entity(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &w
 
 Entity::~Entity() {}
 
-void Entity::setScene(std::shared_ptr<Scene> scene) {
+void Entity::setScene(Scene * scene) {
 	this->scene = scene;
 
 	for (auto child : this->getChildren()) {
@@ -25,7 +24,7 @@ void Entity::setScene(std::shared_ptr<Scene> scene) {
 	}
 }
 
-std::shared_ptr<Scene> Entity::getScene() const {
+Scene * Entity::getScene() const {
 	return this->scene;
 }
 
@@ -37,8 +36,7 @@ void Entity::setPos(const Vec3 &worldPos) {
 		this->localPos = this->getParent()->toLocal(this->getPos());
 	}
 
-	this->recalculateAABB();
-	this->getScene()->recalculateKDtree();
+	this->recalculateKDtree();
 }
 
 void Entity::setAng(const Vec3 &worldAng) {
@@ -50,8 +48,7 @@ void Entity::setAng(const Vec3 &worldAng) {
 		this->localQuat = this->getParent()->toLocalOrientation(q);
 	}
 
-	this->recalculateAABB();
-	this->getScene()->recalculateKDtree();
+	this->recalculateKDtree();
 }
 
 void Entity::translate(const Vec3 &dV) {
@@ -164,7 +161,7 @@ bool Entity::hasChildren() const {
 	return (children.size() > 0);
 }
 
-std::shared_ptr<Entity> Entity::getParent() const {
+Entity * Entity::getParent() const {
 	return this->parent;
 }
 
@@ -172,7 +169,7 @@ std::vector<std::shared_ptr<Entity>> Entity::getChildren() const {
 	return this->children;
 }
 
-void Entity::setParent(std::shared_ptr<Entity> parent, bool dontCallAgain) {
+void Entity::setParent(Entity * parent) {
 	if (this->hasParent()) { return; }
 	if (parent == nullptr) { return; }
 
@@ -181,22 +178,18 @@ void Entity::setParent(std::shared_ptr<Entity> parent, bool dontCallAgain) {
 	this->localQuat = parent->toLocalOrientation(this->worldQuat);
 	this->localPos = this->getParent()->toLocal(this->getPos());
 
-	// could cause issues: https://stackoverflow.com/questions/11711034/stdshared-ptr-of-this
-	if (dontCallAgain) { return; }
-//	parent->addChild(this,true);
-	// TODO: FIX (weak ptr?)
+	// deprecated: could cause issues: https://stackoverflow.com/questions/11711034/stdshared-ptr-of-this
 }
 
-void Entity::addChild(std::shared_ptr<Entity> child, bool dontCallAgain) {
+void Entity::addChild(std::shared_ptr<Entity> child) {
 	if (child == nullptr) { return; }
 	if (child->hasParent()) { return; }
 
 	this->children.push_back(child);
-	this->recalculateAABB();
 
-	if (!dontCallAgain) { return; }
-//	child->setParent(this,true);
-	// todo: fix
+	child->setParent(this);
+
+	this->recalculateKDtree();
 }
 
 std::experimental::optional<IntersectData> Entity::intersectRay(const Ray &r) const {
@@ -211,12 +204,21 @@ bool Entity::canGenerateRays() const {
 	return this->fl_canGenerateRays;
 }
 
+bool Entity::isVisibile() const {
+	return (this->canIntersectRays() && this->canGenerateRays());
+}
+
 void Entity::setIntersectRays(bool b) {
 	this->fl_canIntersectRays = b;
 }
 
 void Entity::setGenerateRays(bool b) {
 	this->fl_canGenerateRays = b;
+}
+
+void Entity::setVisible(bool b) {
+	this->setIntersectRays(b);
+	this->setGenerateRays(b);
 }
 
 std::vector<Vec3> Entity::getCorners() const {
@@ -228,38 +230,39 @@ void Entity::setCorners(const Vec3 &v1, const Vec3 &v2) {
 }
 
 const BoundingBox& Entity::getAABB() const {
-	return (this->aabb);
+	return this->aabb;
 }
 
 BoundingBox& Entity::getAABB() {
-	return (this->aabb);
+	return this->aabb;
 }
 
 void Entity::recalculateKDtree() {
-	this->kdnode = kdnode->build(this->getChildren());
+	if (this->kdnode == nullptr) { this->kdnode = std::make_shared<KDNode>(); }
+	this->recalculateAABB();
+
+	for (auto child : this->getChildren()) {
+		child->recalculateKDtree();
+	}
+
+	this->kdnode->build(this->getChildren());
+
+	if (this->getScene() == nullptr) { return; }
+	this->getScene()->recalculateKDtree();
 }
 
 void Entity::recalculateAABB() {
-	Vec3 AABBmin(0,0,0);
-	Vec3 AABBmax(0,0,0);
-
 	for (auto child : this->getChildren()) {
 		child->recalculateAABB();
-
-		std::vector<Vec3> corners = child->getCorners();
-		Vec3 v1 = corners[0];
-		Vec3 v2 = corners[0];
-
-		AABBmin.setX( std::min( std::min(v1.getX(),v2.getX()), AABBmin.getX() ));
-		AABBmin.setY( std::min( std::min(v1.getY(),v2.getY()), AABBmin.getY() ));
-		AABBmin.setZ( std::min( std::min(v1.getZ(),v2.getZ()), AABBmin.getZ() ));
-
-		AABBmax.setX( std::max( std::max(v1.getX(),v2.getX()), AABBmax.getX() ));
-		AABBmax.setY( std::max( std::max(v1.getY(),v2.getY()), AABBmax.getY() ));
-		AABBmax.setZ( std::max( std::max(v1.getZ(),v2.getZ()), AABBmax.getZ() ));
 	}
 
-	this->getAABB().setCorners(AABBmin,AABBmax);
+	std::vector<Vec3> corners = this->getCorners();
+	Vec3 v1 = corners[0];
+	Vec3 v2 = corners[1];
+
+	this->setAABB(BoundingBox());
+	this->getAABB().expandToInclude(v1,v2);
+	this->getAABB().expandToInclude(this->getChildren());
 }
 
 void Entity::setAABB(const BoundingBox &aabb) {

@@ -12,7 +12,9 @@ class Vec3;
 
 class CameraSensor {
 	private:
-		std::shared_ptr<const Surface> surface;
+		Scene * scene;
+
+		std::shared_ptr<Surface> surface;
 		std::shared_ptr<RayFactory> rayfactory;
 
 		int resX;
@@ -23,10 +25,12 @@ class CameraSensor {
 
 	public:
 		CameraSensor();
-		CameraSensor(std::shared_ptr<const Surface> surface, int resX = 0, int resY = 0, double dpi = 1);
+		CameraSensor(std::shared_ptr<Surface> surface, int resX = 0, int resY = 0, double dpi = 1);
 
-		void setSurface(std::shared_ptr<const Surface> surface);
-		std::shared_ptr<const Surface> getSurface() const;
+		void setScene(Scene * scene);
+
+		void setSurface(std::shared_ptr<Surface> surface);
+		std::shared_ptr<Surface> getSurface() const;
 
 		void setDPI(double dpi);
 		double getDPI() const;

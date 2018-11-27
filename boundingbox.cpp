@@ -85,6 +85,13 @@ void BoundingBox::expandToInclude(const BoundingBox &aabb) {
 	this->setCorners(AABBmin,AABBmax);
 }
 
+void BoundingBox::expandToInclude(const Vec3 &corner1, const Vec3 &corner2) {
+	BoundingBox aabb;
+	aabb.setCorners(corner1,corner2);
+
+	this->expandToInclude(aabb);
+}
+
 void BoundingBox::expandToInclude(const std::vector<std::shared_ptr<Entity>>& ents) {
 	for (auto ent : ents) {
 		this->expandToInclude(ent->getAABB());
@@ -101,6 +108,8 @@ std::experimental::optional<IntersectData> BoundingBox::intersectRay(const Ray &
 	std::vector<Vec3> corners = this->getCorners();
 	Vec3 min = corners[0];
 	Vec3 max = corners[1];
+
+	if (min == max) { return std::experimental::nullopt; }
 
 	double t1 = (min.getX() - r.getPos().getX())*r.getDirection().getInvX();
 	double t2 = (max.getX() - r.getPos().getX())*r.getDirection().getInvX();

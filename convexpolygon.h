@@ -18,7 +18,7 @@ class ConvexPolygon : public Surface {
 		std::vector<std::shared_ptr<Plane>> planes;
 
 	public:
-		ConvexPolygon(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng);
+		ConvexPolygon(const Vec3 &worldPos, const Vec3 &worldAng);
 		virtual ~ConvexPolygon();
 
 		virtual Vec3 getPointOnSurface(double u, double v) const override;

@@ -16,13 +16,13 @@ class Ray;
 class IntersectData;
 class KDNode;
 
-class Entity : public std::enable_shared_from_this<Entity> {
+class Entity {
 	private:
-		std::shared_ptr<Scene> scene;
-
-		std::shared_ptr<Entity> parent;
-		std::vector<std::shared_ptr<Entity>> children;
+		Scene * scene;
 		std::shared_ptr<KDNode> kdnode;
+
+		Entity * parent;
+		std::vector<std::shared_ptr<Entity>> children;
 
 		Vec3 worldPos;
 		Vec3 localPos;
@@ -30,8 +30,8 @@ class Entity : public std::enable_shared_from_this<Entity> {
 		Quat localQuat;
 
 		BoundingBox aabb;
-		bool fl_canIntersectRays = false;
-		bool fl_canGenerateRays = false;
+		bool fl_canIntersectRays = true;
+		bool fl_canGenerateRays = true;
 
 		void recalculateKDtree();
 
@@ -39,11 +39,11 @@ class Entity : public std::enable_shared_from_this<Entity> {
 		void setCorners(const Vec3 &v1, const Vec3 &v2);
 
 	public:
-		Entity(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng);
+		Entity(const Vec3 &worldPos, const Vec3 &worldAng);
 		virtual ~Entity();
 
-		void setScene(std::shared_ptr<Scene> scene);
-		std::shared_ptr<Scene> getScene() const;
+		void setScene(Scene * scene);
+		Scene * getScene() const;
 
 		void setPos(const Vec3 &worldPos);
 		void setAng(const Vec3 &worldAng);
@@ -77,16 +77,18 @@ class Entity : public std::enable_shared_from_this<Entity> {
 
 		bool hasParent() const;
 		bool hasChildren() const;
-		std::shared_ptr<Entity> getParent() const;
+		Entity * getParent() const;
 		std::vector<std::shared_ptr<Entity>> getChildren() const;
-		void setParent(std::shared_ptr<Entity> parent, bool dontCallAgain = false);
-		void addChild(std::shared_ptr<Entity> child, bool dontCallAgain = false);
+		void setParent(Entity * parent);
+		void addChild(std::shared_ptr<Entity> child);
 
 		virtual std::experimental::optional<IntersectData> intersectRay(const Ray &r) const;
 		bool canIntersectRays() const;
 		bool canGenerateRays() const;
+		bool isVisibile() const;
 		void setIntersectRays(bool b);
 		void setGenerateRays(bool b);
+		void setVisible(bool b);
 
 		virtual std::vector<Vec3> getCorners() const;
 		const BoundingBox& getAABB() const;

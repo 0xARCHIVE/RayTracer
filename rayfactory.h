@@ -13,11 +13,13 @@ class ColorData;
 
 class RayFactory {
 	private:
-		std::shared_ptr<Scene> scene;
+		Scene * scene;
 
 	public:
 		RayFactory();
-		RayFactory(std::shared_ptr<Scene> scene);
+		RayFactory(Scene * scene);
+
+		void setScene(Scene * scene);
 
 		std::shared_ptr<Ray> generateRay(const Vec3 &worldPos, const Vec3 &worldDir, int life_left, const ColorData &color, double spreadAng) const;
 		std::vector<std::shared_ptr<Ray>> generateRays(const Vec3 &worldPos, const Vec3 &worldDir, int life_left, const ColorData &color, double spreadAng, int numRays) const;

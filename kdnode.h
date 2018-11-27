@@ -27,17 +27,20 @@ class KDNode {
 		KDNode();
 		~KDNode();
 
+		bool hasLeft() const;
+		bool hasRight() const;
 		std::shared_ptr<KDNode> getLeft() const;
 		std::shared_ptr<KDNode> getRight() const;
 		void setLeft(std::shared_ptr<KDNode> left);
 		void setRight(std::shared_ptr<KDNode> right);
 
-		const std::vector<std::shared_ptr<Entity>>& getEnts() const;
-		void setEnts(const std::vector<std::shared_ptr<Entity>>& ents);
+		const std::vector<std::shared_ptr<Entity>> getEnts() const;
+		void setEnts(const std::vector<std::shared_ptr<Entity>> ents);
 
 		const BoundingBox& getAABB() const;
+		BoundingBox& getAABB();
 
-		std::shared_ptr<KDNode> build(const std::vector<std::shared_ptr<Entity>>& ents);
+		void build(const std::vector<std::shared_ptr<Entity>> ents);
 		std::experimental::optional<IntersectData> intersectRay(const Ray& _r) const;
 };
 

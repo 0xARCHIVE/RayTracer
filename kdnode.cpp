@@ -7,13 +7,19 @@ namespace RayTracer {
 // https://blog.frogslayer.com/kd-trees-for-faster-ray-tracing-with-triangles/
 
 KDNode::KDNode() {
-	this->left = nullptr;
-	this->right = nullptr;
-
-	this->ents = std::vector<std::shared_ptr<Entity>>();
+	this->setEnts(std::vector<std::shared_ptr<Entity>>());
+	this->build(this->getEnts());
 }
 
 KDNode::~KDNode() {}
+
+bool KDNode::hasLeft() const {
+	return (this->getLeft() != nullptr);
+}
+
+bool KDNode::hasRight() const {
+	return (this->getRight() != nullptr);
+}
 
 std::shared_ptr<KDNode> KDNode::getLeft() const {
 	return this->left;
@@ -31,11 +37,11 @@ void KDNode::setRight(std::shared_ptr<KDNode> right) {
 	this->right = right;
 }
 
-const std::vector<std::shared_ptr<Entity>>& KDNode::getEnts() const {
+const std::vector<std::shared_ptr<Entity>> KDNode::getEnts() const {
 	return this->ents;
 }
 
-void KDNode::setEnts(const std::vector<std::shared_ptr<Entity>>& ents) {
+void KDNode::setEnts(const std::vector<std::shared_ptr<Entity>> ents) {
 	this->ents = ents;
 	this->recalculateAABB();
 }
@@ -44,16 +50,18 @@ const BoundingBox& KDNode::getAABB() const {
 	return this->aabb;
 }
 
-std::shared_ptr<KDNode> KDNode::build(const std::vector<std::shared_ptr<Entity>>& ents) {
-	std::shared_ptr<KDNode> node = std::make_shared<KDNode>();
-	node->setEnts(ents);
+BoundingBox& KDNode::getAABB() {
+	return this->aabb;
+}
 
-	if (ents.size() == 0) { return node; }
+void KDNode::build(const std::vector<std::shared_ptr<Entity>> ents) {
+	this->setEnts(ents);
 
+	if (ents.size() == 0) { return; }
 	if (ents.size() == 1) {
-		node->setLeft(std::make_shared<KDNode>());
-		node->setRight(std::make_shared<KDNode>());
-		return node;
+		this->setLeft(std::make_shared<KDNode>());
+		this->setRight(std::make_shared<KDNode>());
+		return;
 	}
 
 	Vec3 midpoint(0,0,0);
@@ -64,7 +72,7 @@ std::shared_ptr<KDNode> KDNode::build(const std::vector<std::shared_ptr<Entity>>
 
 	std::vector<std::shared_ptr<Entity>> leftEnts;
 	std::vector<std::shared_ptr<Entity>> rightEnts;
-	int axis = node->getAABB().getLongestAxis();
+	int axis = this->getAABB().getLongestAxis();
 	for (auto ent : ents) {
 		switch(axis) {
 			case 0:	// x
@@ -91,26 +99,28 @@ std::shared_ptr<KDNode> KDNode::build(const std::vector<std::shared_ptr<Entity>>
 		}
 	}
 
+	std::shared_ptr<KDNode> nodeL = std::make_shared<KDNode>();
+	std::shared_ptr<KDNode> nodeR = std::make_shared<KDNode>();
 	if ((double)matches/leftEnts.size() < 0.5 && (double)matches/rightEnts.size() < 0.5) {
-		node->setLeft(node->build(leftEnts));
-		node->setRight(node->build(rightEnts));
-	} else {
-		node->setLeft(std::make_shared<KDNode>());
-		node->setRight(std::make_shared<KDNode>());
+		nodeL->build(leftEnts);
+		nodeR->build(rightEnts);
 	}
+	this->setLeft(nodeL);
+	this->setRight(nodeR);
 
-	return node;
+	return;
 }
 
 std::experimental::optional<IntersectData> KDNode::intersectRay(const Ray &r) const {
 	std::experimental::optional<IntersectData> aabbIntersect = this->getAABB().intersectRay(r);
-	if (!aabbIntersect) { return aabbIntersect; }
+	if (!aabbIntersect) { return std::experimental::nullopt; }
 
 	bool hit_ent = false;
 	double minDist;
 
 	std::experimental::optional<IntersectData> intersectData;
 
+	if (!this->hasLeft() || !this->hasRight()) { return std::experimental::nullopt; }
 	if (this->getLeft()->getEnts().size() > 0 || this->getRight()->getEnts().size() > 0) {
 		std::experimental::optional<IntersectData> hitLeft = this->getLeft()->intersectRay(r);
 		if (hitLeft) { return hitLeft; }
@@ -122,6 +132,7 @@ std::experimental::optional<IntersectData> KDNode::intersectRay(const Ray &r) co
 	} else {
 		for (auto ent : this->getEnts()) {
 			if (ent == nullptr) { continue;}
+			if (!ent->canIntersectRays()) { continue; }
 			if (!ent->getAABB().intersectRay(r)) { continue; }
 
 			std::experimental::optional<IntersectData> ent_intersectData = ent->intersectRay(r);
@@ -140,6 +151,8 @@ std::experimental::optional<IntersectData> KDNode::intersectRay(const Ray &r) co
 		if (hit_ent) { return intersectData; }
 		return std::experimental::nullopt;
 	}
+
+	return std::experimental::nullopt;
 }
 
 void KDNode::setAABB(const BoundingBox &aabb) {
@@ -147,7 +160,7 @@ void KDNode::setAABB(const BoundingBox &aabb) {
 }
 
 void KDNode::recalculateAABB() {
-	this->aabb.expandToInclude(this->getEnts());
+	this->getAABB().expandToInclude(this->getEnts());
 }
 
 }

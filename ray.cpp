@@ -9,7 +9,7 @@
 
 namespace RayTracer {
 
-Ray::Ray(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left) {
+Ray::Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left) {
 	this->scene = scene;
 	this->rayfactory = std::make_shared<RayFactory>(scene);
 	this->life_left = life_left;
@@ -17,7 +17,7 @@ Ray::Ray(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldDi
 	this->worldDir = worldDir;
 }
 
-Ray::Ray(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left, ColorData color) {
+Ray::Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left, ColorData color) {
 	this->scene = scene;
 	this->rayfactory = std::make_shared<RayFactory>(scene);
 	this->life_left = life_left;
@@ -39,7 +39,7 @@ int Ray::lifeLeft() {
 }
 
 Vec3 Ray::computeResult() {
-	if (scene == nullptr) { return Vec3(0,0,0); }
+	if (this->scene == nullptr) { return Vec3(0,0,0); }
 
 	Vec3 returnValue = this->color.multiplier*this->color.emissivity*this->color.color;
 

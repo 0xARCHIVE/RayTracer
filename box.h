@@ -14,7 +14,7 @@ class Box : public ConvexPolygon {
 	private:
 		Vec3 dimensions;
 	public:
-		Box(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng, const Vec3 &dimensions);
+		Box(const Vec3 &worldPos, const Vec3 &worldAng, const Vec3 &dimensions);
 		virtual ~Box();
 
 		void setDimensions(const Vec3 &dimensions);

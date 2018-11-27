@@ -7,20 +7,32 @@
 
 namespace RayTracer {
 
-CameraSensor::CameraSensor() {}
+CameraSensor::CameraSensor() {
+	this->scene = nullptr;
+	this->rayfactory = std::make_shared<RayFactory>();
+	this->surface = nullptr;
+}
 
-CameraSensor::CameraSensor(std::shared_ptr<const Surface> surface, int resX, int resY, double dpi) {
-	this->rayfactory = std::make_shared<RayFactory>(surface->getScene());
+CameraSensor::CameraSensor(std::shared_ptr<Surface> surface, int resX, int resY, double dpi) {
+	this->scene = nullptr;
+
+	this->rayfactory = std::make_shared<RayFactory>();
 	this->setSurface(surface);
 	this->setRes(resX,resY);
 	this->setDPI(dpi);
 }
 
-void CameraSensor::setSurface(std::shared_ptr<const Surface> surface) {
-	this->surface = surface;
+void CameraSensor::setScene(Scene * scene) {
+	this->scene = scene;
+	this->rayfactory->setScene(scene);
 }
 
-std::shared_ptr<const Surface> CameraSensor::getSurface() const {
+void CameraSensor::setSurface(std::shared_ptr<Surface> surface) {
+	this->surface = surface;
+	this->surface->setScene(this->scene);
+}
+
+std::shared_ptr<Surface> CameraSensor::getSurface() const {
 	return this->surface;
 }
 

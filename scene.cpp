@@ -8,10 +8,12 @@ Scene::Scene() {
 }
 
 void Scene::addCam(std::shared_ptr<Camera> cam) {
+	cam->setScene(this);
 	this->cameras.push_back(cam);
 }
 
 void Scene::addEnt(std::shared_ptr<Entity> ent) {
+	ent->setScene(this);
 	this->ents.push_back(ent);
 	this->recalculateKDtree();
 }
@@ -39,7 +41,7 @@ std::vector<ImageData> Scene::getCapturedImages() {
 }
 
 void Scene::recalculateKDtree() {
-	this->kdnode = this->kdnode->build(this->getEnts());
+	this->kdnode->build(this->getEnts());
 }
 
 std::experimental::optional<IntersectData> Scene::intersectRay(const Ray &r) const {

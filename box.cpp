@@ -3,25 +3,25 @@
 
 namespace RayTracer {
 
-Box::Box(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng, const Vec3 &dimensions) : ConvexPolygon(scene, worldPos, worldAng) {
+Box::Box(const Vec3 &worldPos, const Vec3 &worldAng, const Vec3 &dimensions) : ConvexPolygon(worldPos, worldAng) {
 	this->setDimensions(dimensions);
 
 	double depth = dimensions.getX();
 	double width = dimensions.getY();
 	double height = dimensions.getZ();
 
-	std::shared_ptr<Plane> p1 = std::make_shared<Plane>(scene, toWorld(Vec3(depth/2,0,0)), worldAng + Vec3(90,0,0), width,height);
-	std::shared_ptr<Plane> p2 = std::make_shared<Plane>(scene, toWorld(Vec3(-depth/2,0,0)), worldAng + Vec3(-90,0,0), width,height);
-	std::shared_ptr<Plane> p3 = std::make_shared<Plane>(scene, toWorld(Vec3(0,width/2,0)), worldAng + Vec3(0,0,-90), depth,height);
-	std::shared_ptr<Plane> p4 = std::make_shared<Plane>(scene, toWorld(Vec3(0,-width/2,0)), worldAng + Vec3(0,0,90), depth,height);
-	std::shared_ptr<Plane> p5 = std::make_shared<Plane>(scene, toWorld(Vec3(0,0,height/2)), worldAng, width,depth);
-	std::shared_ptr<Plane> p6 = std::make_shared<Plane>(scene, toWorld(Vec3(0,0,-height/2)), worldAng + Vec3(0,0,180), width,depth);
+	std::shared_ptr<Plane> p1 = std::make_shared<Plane>(toWorld(Vec3(depth/2,0,0)), worldAng + Vec3(90,0,0), width,height);
+	std::shared_ptr<Plane> p2 = std::make_shared<Plane>(toWorld(Vec3(-depth/2,0,0)), worldAng + Vec3(-90,0,0), width,height);
+	std::shared_ptr<Plane> p3 = std::make_shared<Plane>(toWorld(Vec3(0,width/2,0)), worldAng + Vec3(0,0,-90), depth,height);
+	std::shared_ptr<Plane> p4 = std::make_shared<Plane>(toWorld(Vec3(0,-width/2,0)), worldAng + Vec3(0,0,90), depth,height);
+	std::shared_ptr<Plane> p5 = std::make_shared<Plane>(toWorld(Vec3(0,0,height/2)), worldAng, width,depth);
+	std::shared_ptr<Plane> p6 = std::make_shared<Plane>(toWorld(Vec3(0,0,-height/2)), worldAng + Vec3(0,0,180), width,depth);
 
 	// testing
 	ColorData c;
 	c.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-	c.emissivity = 1;
-	c.reflectivity = 0;
+	c.emissivity = 0.5;
+	c.reflectivity = 0.5;
 	c.transmissivity = 0;
 	c.multiplier = 1;
 
@@ -47,26 +47,12 @@ Box::Box(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAn
 	p6->setColor(c6);
 	//
 
-	this->addChild(p1);
-	this->addChild(p2);
-	this->addChild(p3);
-	this->addChild(p4);
-	this->addChild(p5);
-	this->addChild(p6);
-
-	p1->setIntersectRays(true);
-	p2->setIntersectRays(true);
-	p3->setIntersectRays(true);
-	p4->setIntersectRays(true);
-	p5->setIntersectRays(true);
-	p6->setIntersectRays(true);
-
-	p1->setGenerateRays(true);
-	p2->setGenerateRays(true);
-	p3->setGenerateRays(true);
-	p4->setGenerateRays(true);
-	p5->setGenerateRays(true);
-	p6->setGenerateRays(true);
+	this->addPlane(p1);
+	this->addPlane(p2);
+	this->addPlane(p3);
+	this->addPlane(p4);
+	this->addPlane(p5);
+	this->addPlane(p6);
 }
 
 Box::~Box() {}

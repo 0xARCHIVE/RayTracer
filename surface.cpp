@@ -2,7 +2,7 @@
 
 namespace RayTracer {
 
-Surface::Surface(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng) : Entity(scene, worldPos, worldAng) {
+Surface::Surface(const Vec3 &worldPos, const Vec3 &worldAng) : Entity(worldPos, worldAng) {
 	ColorData colorData;
 	colorData.color = Vec3(0,0,0);
 	this->setColor(colorData);

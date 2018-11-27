@@ -5,9 +5,15 @@
 
 namespace RayTracer {
 
-RayFactory::RayFactory() {}
+RayFactory::RayFactory() {
+	this->scene = nullptr;
+}
 
-RayFactory::RayFactory(std::shared_ptr<Scene> scene) {
+RayFactory::RayFactory(Scene * scene) {
+	this->setScene(scene);
+}
+
+void RayFactory::setScene(Scene * scene) {
 	this->scene = scene;
 }
 
@@ -17,6 +23,7 @@ std::shared_ptr<Ray> RayFactory::generateRay(const Vec3 &worldPos, const Vec3 &w
 
 std::vector<std::shared_ptr<Ray>> RayFactory::generateRays(const Vec3 &worldPos, const Vec3 &worldDir, int life_left, const ColorData &color, double spreadAng, int numRays) const {
 	std::vector<std::shared_ptr<Ray>> rays;
+
 	if (this->scene == nullptr) { return rays; }
 	for (int i = 0; i < numRays; i++) {
 		Vec3 dir = worldDir.randomSpread(spreadAng);

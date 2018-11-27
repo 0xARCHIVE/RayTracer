@@ -19,7 +19,7 @@ class Surface : public Entity {
 		std::function<ColorData(void)> colorFunc_constant;
 
 	public:
-		Surface(std::shared_ptr<Scene> scene, const Vec3 &worldPos, const Vec3 &worldAng);
+		Surface(const Vec3 &worldPos, const Vec3 &worldAng);
 		virtual ~Surface();
 
 		ColorData getColor() const;
