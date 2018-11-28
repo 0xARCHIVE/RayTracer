@@ -27,7 +27,7 @@ std::experimental::optional<Vec3> ConvexPolygon::getNorm(const Vec3 &worldPos) c
 std::experimental::optional<IntersectData> ConvexPolygon::intersectRay(const Ray &r) const {
 	// hitPos must be "inside" all of the planes of the shape, can't just use the normal KDtree to find intersection
 	bool found = false;
-	double dist;
+	double dist = 0;
 	std::shared_ptr<Plane> plane_touching = nullptr;
 	Vec3 point_touching;
 	IntersectData data;
@@ -39,6 +39,9 @@ std::experimental::optional<IntersectData> ConvexPolygon::intersectRay(const Ray
 		if (!isInsideShape(point)) { continue; }
 
 		Vec3 dV = (point - r.getPos());
+		double dot = dV.dot(r.getDirection());
+		if (dot < 0) { continue; }
+
 		double _dist = dV.length();
 
 		if (found == false || dist > (_dist + GLOBAL_SETTING_RAY_PRECISION)) {

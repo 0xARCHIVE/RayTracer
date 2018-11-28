@@ -33,8 +33,6 @@ class Entity {
 		bool fl_canIntersectRays = true;
 		bool fl_canGenerateRays = true;
 
-		void recalculateKDtree();
-
 		void setAABB(const BoundingBox &aabb);
 		void setCorners(const Vec3 &v1, const Vec3 &v2);
 
@@ -94,6 +92,8 @@ class Entity {
 		const BoundingBox& getAABB() const;
 		BoundingBox& getAABB();
 		void recalculateAABB();
+		void recalculateKDtree();
+
 };
 
 }

@@ -20,8 +20,8 @@ Box::Box(const Vec3 &worldPos, const Vec3 &worldAng, const Vec3 &dimensions) : C
 	// testing
 	ColorData c;
 	c.color = Vec3(rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0),rand()/(RAND_MAX+1.0));
-	c.emissivity = 0.5;
-	c.reflectivity = 0.5;
+	c.emissivity = 0.1;
+	c.reflectivity = 0.75;
 	c.transmissivity = 0;
 	c.multiplier = 1;
 

@@ -33,17 +33,23 @@ std::experimental::optional<IntersectData> Plane::intersectRay(const Ray &r) con
 		hitPos = point + lambda*direction;
 	}
 
-	double dV_width = std::abs(hitPos.dot( this->right() ));
-	double dV_height = std::abs(hitPos.dot( this->forward() ));
+	Vec3 dV = hitPos - r.getPos();
+	double dot = dV.dot(r.getDirection());
+	if (dot < 0) { return std::experimental::nullopt; }
 
-	if (dV_width*2 > getWidth() + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
-	if (dV_height*2 > getHeight() + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
+	Vec3 localHitPos = hitPos - this->getPos();
+	double dV_width = std::abs(localHitPos.dot( this->right() ));
+	double dV_height = std::abs(localHitPos.dot( this->forward() ));
+
+	if (dV_width > getWidth()*0.5 + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
+	if (dV_height > getHeight()*0.5 + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
 
 	IntersectData intersectData;
 	intersectData.surface = this;
 	intersectData.hitPos = hitPos;
 	intersectData.colorData = getColor(intersectData.hitPos);
 	intersectData.hitNorm = this->up();
+	intersectData.hitDist = dV.length();
 
 	return std::experimental::optional<IntersectData>(intersectData);
 }
@@ -68,6 +74,8 @@ std::vector<Vec3> Plane::getCorners() const {
 void Plane::setDimensions(double width, double height) {
 	this->width = width;
 	this->height = height;
+
+	this->recalculateKDtree();
 }
 
 double Plane::getWidth() const {
@@ -92,7 +100,11 @@ double Plane::distToPlane(const Vec3 &worldPos) const {
 }
 
 double Plane::signedDistToPlane(const Vec3 &worldPos) const {
+	// not sure if this is source of the issue
+//	std::cout << worldPos << " " << (this->getPos() - worldPos) << " " << this->toLocal(worldPos) << " " << this->up() << std::endl;
+	//std::cout << this->getPos() << " " << worldPos << " " << this->up() << " " << (this->getPos() - worldPos).dot(this->up()) << std::endl;
 	return (this->getPos() - worldPos).dot(this->up());
+//	return this->toLocal(worldPos).dot(Vec3(0,0,-1));
 }
 
 }

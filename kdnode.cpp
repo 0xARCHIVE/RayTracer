@@ -116,17 +116,23 @@ std::experimental::optional<IntersectData> KDNode::intersectRay(const Ray &r) co
 	if (!aabbIntersect) { return std::experimental::nullopt; }
 
 	bool hit_ent = false;
-	double minDist;
+	double minDist = 0;
 
 	std::experimental::optional<IntersectData> intersectData;
 
 	if (!this->hasLeft() || !this->hasRight()) { return std::experimental::nullopt; }
 	if (this->getLeft()->getEnts().size() > 0 || this->getRight()->getEnts().size() > 0) {
 		std::experimental::optional<IntersectData> hitLeft = this->getLeft()->intersectRay(r);
-		if (hitLeft) { return hitLeft; }
-
 		std::experimental::optional<IntersectData> hitRight = this->getRight()->intersectRay(r);
-		if (hitRight) { return hitRight; }
+
+		if (hitLeft && !hitRight) { return hitLeft; }
+		if (!hitLeft && hitRight) { return hitRight; }
+		if (!hitLeft && !hitRight) { return std::experimental::nullopt; }
+
+		double distLeft = hitLeft.value().hitDist;
+		double distRight = hitRight.value().hitDist;
+
+		if (distLeft < distRight) { return hitLeft; } else { return hitRight; }
 
 		return std::experimental::nullopt;
 	} else {
@@ -139,6 +145,10 @@ std::experimental::optional<IntersectData> KDNode::intersectRay(const Ray &r) co
 			if (!ent_intersectData) { continue; }
 
 			Vec3 dV = ent_intersectData.value().hitPos - r.getPos();
+
+			double dot = dV.dot(r.getDirection());
+			if (dot < 0) { continue; }
+
 			double dist = dV.length();
 
 			if (!hit_ent || minDist > (dist + GLOBAL_SETTING_RAY_PRECISION)) {

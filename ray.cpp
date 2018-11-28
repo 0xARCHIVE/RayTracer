@@ -14,7 +14,7 @@ Ray::Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_lef
 	this->rayfactory = std::make_shared<RayFactory>(scene);
 	this->life_left = life_left;
 	this->worldPos = worldPos;
-	this->worldDir = worldDir;
+	this->worldDir = worldDir.normalised();
 }
 
 Ray::Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left, ColorData color) {
@@ -22,7 +22,7 @@ Ray::Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_lef
 	this->rayfactory = std::make_shared<RayFactory>(scene);
 	this->life_left = life_left;
 	this->worldPos = worldPos;
-	this->worldDir = worldDir;
+	this->worldDir = worldDir.normalised();
 	this->color = color;
 }
 

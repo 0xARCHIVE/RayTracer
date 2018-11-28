@@ -36,16 +36,16 @@ std::vector<Vec3> BoundingBox::getCorners() const {
 }
 
 void BoundingBox::setCorners(const Vec3 &v1, const Vec3 &v2) {
-	Vec3 AABBmin(0,0,0);
-	Vec3 AABBmax(0,0,0);
+	Vec3 AABBmin;
+	Vec3 AABBmax;
 
-	AABBmin.setX( std::min( std::min(v1.getX(),v2.getX()), AABBmin.getX() ));
-	AABBmin.setY( std::min( std::min(v1.getY(),v2.getY()), AABBmin.getY() ));
-	AABBmin.setZ( std::min( std::min(v1.getZ(),v2.getZ()), AABBmin.getZ() ));
+	AABBmin.setX( std::min(v1.getX(),v2.getX()) );
+	AABBmin.setY( std::min(v1.getY(),v2.getY()) );
+	AABBmin.setZ( std::min(v1.getZ(),v2.getZ()) );
 
-	AABBmax.setX( std::max( std::max(v1.getX(),v2.getX()), AABBmax.getX() ));
-	AABBmax.setY( std::max( std::max(v1.getY(),v2.getY()), AABBmax.getY() ));
-	AABBmax.setZ( std::max( std::max(v1.getZ(),v2.getZ()), AABBmax.getZ() ));
+	AABBmax.setX( std::max(v1.getX(),v2.getX()) );
+	AABBmax.setY( std::max(v1.getY(),v2.getY()) );
+	AABBmax.setZ( std::max(v1.getZ(),v2.getZ()) );
 
 	this->minCorner = AABBmin;
 	this->maxCorner = AABBmax;
@@ -66,21 +66,23 @@ void BoundingBox::expandToInclude(const BoundingBox &aabb) {
 	std::vector<Vec3> corners = this->getCorners();
 	std::vector<Vec3> AABBcorners = aabb.getCorners();
 
-	Vec3 AABBv1 = AABBcorners[0];
-	Vec3 AABBv2 = AABBcorners[1];
 	Vec3 v1 = corners[0];
 	Vec3 v2 = corners[1];
+	Vec3 AABBv1 = AABBcorners[0];
+	Vec3 AABBv2 = AABBcorners[1];
 
-	Vec3 AABBmax(0,0,0);
-	Vec3 AABBmin(0,0,0);
+	if (v1 == v2) { this->setCorners(AABBv1,AABBv2); return; }
+
+	Vec3 AABBmax;
+	Vec3 AABBmin;
 
 	AABBmin.setX( std::min( std::min(AABBv1.getX(),AABBv2.getX()), std::min(v1.getX(), v2.getX()) ));
-	AABBmin.setY( std::min( std::min(AABBv1.getX(),AABBv2.getX()), std::min(v1.getX(), v2.getY()) ));
-	AABBmin.setZ( std::min( std::min(AABBv1.getX(),AABBv2.getX()), std::min(v1.getX(), v2.getZ()) ));
+	AABBmin.setY( std::min( std::min(AABBv1.getY(),AABBv2.getY()), std::min(v1.getY(), v2.getY()) ));
+	AABBmin.setZ( std::min( std::min(AABBv1.getZ(),AABBv2.getZ()), std::min(v1.getZ(), v2.getZ()) ));
 
 	AABBmax.setX( std::max( std::max(AABBv1.getX(),AABBv2.getX()), std::max(v1.getX(), v2.getX()) ));
-	AABBmax.setY( std::max( std::max(AABBv1.getX(),AABBv2.getX()), std::max(v1.getX(), v2.getY()) ));
-	AABBmax.setZ( std::max( std::max(AABBv1.getX(),AABBv2.getX()), std::max(v1.getX(), v2.getZ()) ));
+	AABBmax.setY( std::max( std::max(AABBv1.getY(),AABBv2.getY()), std::max(v1.getY(), v2.getY()) ));
+	AABBmax.setZ( std::max( std::max(AABBv1.getZ(),AABBv2.getZ()), std::max(v1.getZ(), v2.getZ()) ));
 
 	this->setCorners(AABBmin,AABBmax);
 }

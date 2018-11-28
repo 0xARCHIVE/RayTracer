@@ -13,6 +13,7 @@ struct IntersectData {
 	ColorData colorData;
 	Vec3 hitPos;
 	Vec3 hitNorm;
+	double hitDist;
 };
 
 }

@@ -19,9 +19,9 @@ class Scene {
 	private:
 		std::vector<std::shared_ptr<Camera>> cameras;
 		std::vector<std::shared_ptr<Entity>> ents;
-		std::shared_ptr<KDNode> kdnode;
 
 	public:
+		std::shared_ptr<KDNode> kdnode;
 		Scene();
 
 		void addCam(std::shared_ptr<Camera> cam);
