@@ -190,7 +190,7 @@ void Entity::addChild(std::shared_ptr<Entity> child) {
 	this->recalculateKDtree();
 }
 
-std::experimental::optional<IntersectData> Entity::intersectRay(const Ray &r) const {
+std::unique_ptr<IntersectData> Entity::intersectRay(const Ray &r) const {
 	return this->kdnode->intersectRay(r);
 }
 

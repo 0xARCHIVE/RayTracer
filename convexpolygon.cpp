@@ -24,18 +24,19 @@ std::experimental::optional<Vec3> ConvexPolygon::getNorm(const Vec3 &worldPos) c
 	return std::experimental::nullopt;
 }
 
-std::experimental::optional<IntersectData> ConvexPolygon::intersectRay(const Ray &r) const {
+std::unique_ptr<IntersectData> ConvexPolygon::intersectRay(const Ray &r) const {
 	// hitPos must be "inside" all of the planes of the shape, can't just use the normal KDtree to find intersection
 	bool found = false;
 	double dist = 0;
 	std::shared_ptr<Plane> plane_touching = nullptr;
 	Vec3 point_touching;
-	IntersectData data;
+	std::unique_ptr<IntersectData> intersectData;
 
 	for (auto plane : this->getPlanes()) {
-		std::experimental::optional<IntersectData> dataOpt = plane->intersectRay(r);
-		if (!dataOpt) { continue; }
-		Vec3 point = dataOpt.value().hitPos;
+		std::unique_ptr<IntersectData> data = plane->intersectRay(r);
+		if (data == nullptr) { continue; }
+
+		Vec3 point = data->hitPos;
 		if (!isInsideShape(point)) { continue; }
 
 		Vec3 dV = (point - r.getPos());
@@ -48,16 +49,13 @@ std::experimental::optional<IntersectData> ConvexPolygon::intersectRay(const Ray
 			found = true;
 			plane_touching = plane;
 			point_touching = point;
-			data = dataOpt.value();
 			dist = _dist;
+			intersectData = std::move(data);
 		}
 	}
 
-	if (found) {
-		return std::experimental::optional<IntersectData>(data);
-	}
-
-	return std::experimental::nullopt;
+	if (found) { return intersectData; }
+	return nullptr;
 }
 
 void ConvexPolygon::addPlane(std::shared_ptr<Plane> plane) {

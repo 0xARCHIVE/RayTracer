@@ -33,7 +33,7 @@ class Scene {
 		void captureImages();
 		std::vector<ImageData> getCapturedImages();
 
-		std::experimental::optional<IntersectData> intersectRay(const Ray &r) const;
+		std::unique_ptr<IntersectData> intersectRay(const Ray &r) const;
 		void recalculateKDtree();
 };
 

@@ -80,7 +80,7 @@ class Entity {
 		void setParent(Entity * parent);
 		void addChild(std::shared_ptr<Entity> child);
 
-		virtual std::experimental::optional<IntersectData> intersectRay(const Ray &r) const;
+		virtual std::unique_ptr<IntersectData> intersectRay(const Ray &r) const;
 		inline bool canIntersectRays() const { return this->fl_canIntersectRays; }
 		inline bool canGenerateRays() const { return this->fl_canGenerateRays; }
 		inline bool isVisibile() const { return (this->fl_canIntersectRays && this->fl_canGenerateRays); }

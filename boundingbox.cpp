@@ -105,13 +105,13 @@ void BoundingBox::copy(const BoundingBox &aabb) {
 	this->setCorners(corners[0],corners[1]);
 }
 
-std::experimental::optional<IntersectData> BoundingBox::intersectRay(const Ray &r) const {
+std::unique_ptr<IntersectData> BoundingBox::intersectRay(const Ray &r) const {
 	// https://tavianator.com/fast-branchless-raybounding-box-intersections-part-2-nans/
 	std::vector<Vec3> corners = this->getCorners();
 	Vec3 min = corners[0];
 	Vec3 max = corners[1];
 
-	if (min == max) { return std::experimental::nullopt; }
+	if (min == max) { return nullptr; }
 
 	double t1 = (min.getX() - r.getPos().getX())*r.getDirection().getInvX();
 	double t2 = (max.getX() - r.getPos().getX())*r.getDirection().getInvX();
@@ -129,12 +129,8 @@ std::experimental::optional<IntersectData> BoundingBox::intersectRay(const Ray &
         tmin = std::max(tmin, std::min(std::min(t1, t2), tmax));
         tmax = std::min(tmax, std::max(std::max(t1, t2), tmin));
 
-	if (tmax >= std::max(tmin, 0.0)) {
-		IntersectData out;
-		return std::experimental::optional<IntersectData>(out);
-	}
-
-	return std::experimental::nullopt;
+	if (tmax >= std::max(tmin, 0.0)) { return std::make_unique<IntersectData>(); }
+	return nullptr;
 }
 
 }

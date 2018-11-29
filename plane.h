@@ -25,7 +25,7 @@ class Plane : public Surface {
 
 		virtual Vec3 getPointOnSurface(double u, double v) const override;
 		virtual std::experimental::optional<Vec3> getNorm(const Vec3 &worldPos) const override;
-		virtual std::experimental::optional<IntersectData> intersectRay(const Ray &r) const override;
+		virtual std::unique_ptr<IntersectData> intersectRay(const Ray &r) const override;
 
 		virtual std::vector<Vec3> getCorners() const override;
 

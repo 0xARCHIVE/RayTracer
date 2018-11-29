@@ -111,40 +111,40 @@ void KDNode::build(const std::vector<std::shared_ptr<Entity>> ents) {
 	return;
 }
 
-std::experimental::optional<IntersectData> KDNode::intersectRay(const Ray &r) const {
-	std::experimental::optional<IntersectData> aabbIntersect = this->getAABB().intersectRay(r);
-	if (!aabbIntersect) { return std::experimental::nullopt; }
+std::unique_ptr<IntersectData> KDNode::intersectRay(const Ray &r) const {
+	std::unique_ptr<IntersectData> aabbIntersect = this->getAABB().intersectRay(r);
+	if (aabbIntersect == nullptr) { return nullptr; }
 
 	bool hit_ent = false;
 	double minDist = 0;
 
-	std::experimental::optional<IntersectData> intersectData;
+	std::unique_ptr<IntersectData> intersectData;
 
-	if (!this->hasLeft() || !this->hasRight()) { return std::experimental::nullopt; }
+	if (!this->hasLeft() || !this->hasRight()) { return nullptr; }
 	if (this->getLeft()->getEnts().size() > 0 || this->getRight()->getEnts().size() > 0) {
-		std::experimental::optional<IntersectData> hitLeft = this->getLeft()->intersectRay(r);
-		std::experimental::optional<IntersectData> hitRight = this->getRight()->intersectRay(r);
+		std::unique_ptr<IntersectData> hitLeft = this->getLeft()->intersectRay(r);
+		std::unique_ptr<IntersectData> hitRight = this->getRight()->intersectRay(r);
 
 		if (hitLeft && !hitRight) { return hitLeft; }
 		if (!hitLeft && hitRight) { return hitRight; }
-		if (!hitLeft && !hitRight) { return std::experimental::nullopt; }
+		if (!hitLeft && !hitRight) { return nullptr; }
 
-		double distLeft = hitLeft.value().hitDist;
-		double distRight = hitRight.value().hitDist;
+		double distLeft = hitLeft->hitDist;
+		double distRight = hitRight->hitDist;
 
 		if (distLeft < distRight) { return hitLeft; } else { return hitRight; }
 
-		return std::experimental::nullopt;
+		return nullptr;
 	} else {
 		for (auto ent : this->getEnts()) {
 			if (ent == nullptr) { continue;}
 			if (!ent->canIntersectRays()) { continue; }
 			if (!ent->getAABB().intersectRay(r)) { continue; }
 
-			std::experimental::optional<IntersectData> ent_intersectData = ent->intersectRay(r);
+			std::unique_ptr<IntersectData> ent_intersectData = ent->intersectRay(r);
 			if (!ent_intersectData) { continue; }
 
-			Vec3 dV = ent_intersectData.value().hitPos - r.getPos();
+			Vec3 dV = ent_intersectData->hitPos - r.getPos();
 
 			double dot = dV.dot(r.getDirection());
 			if (dot < 0) { continue; }
@@ -154,15 +154,15 @@ std::experimental::optional<IntersectData> KDNode::intersectRay(const Ray &r) co
 			if (!hit_ent || minDist > (dist + GLOBAL_SETTING_RAY_PRECISION)) {
 				hit_ent = true;
 				minDist = dist;
-				intersectData = ent_intersectData;
+				intersectData = std::move(ent_intersectData);
 			}
 		}
 
 		if (hit_ent) { return intersectData; }
-		return std::experimental::nullopt;
+		return nullptr;
 	}
 
-	return std::experimental::nullopt;
+	return nullptr;
 }
 
 void KDNode::setAABB(const BoundingBox &aabb) {

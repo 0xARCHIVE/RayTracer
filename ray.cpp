@@ -44,15 +44,15 @@ Vec3 Ray::computeResult() {
 	Vec3 returnValue = this->color.multiplier*this->color.emissivity*this->color.color;
 
 	if (life_left <= 0) { return returnValue; }
-	std::experimental::optional<IntersectData> intersectData = this->scene->intersectRay(*(this));
-	if (!intersectData) { return returnValue; }
+	std::unique_ptr<IntersectData> intersectData = this->scene->intersectRay(*(this));
+	if (intersectData == nullptr) { return returnValue; }
 
-	Vec3 hitPos = intersectData.value().hitPos;
-	Vec3 hitNorm = intersectData.value().hitNorm;
+	Vec3 hitPos = intersectData->hitPos;
+	Vec3 hitNorm = intersectData->hitNorm;
 	if (hitNorm.dot(getDirection()) > 0) {  hitNorm = -1*hitNorm; }
 
-	ColorData color = intersectData.value().colorData;
-	const Surface * surface = intersectData.value().surface;
+	ColorData color = intersectData->colorData;
+	const Surface * surface = intersectData->surface;
 	Vec3 secondary_result(0,0,0);
 
 	if (surface->canGenerateRays()) {

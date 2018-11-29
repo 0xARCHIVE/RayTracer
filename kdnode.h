@@ -41,7 +41,7 @@ class KDNode {
 		BoundingBox& getAABB();
 
 		void build(const std::vector<std::shared_ptr<Entity>> ents);
-		std::experimental::optional<IntersectData> intersectRay(const Ray& _r) const;
+		std::unique_ptr<IntersectData> intersectRay(const Ray& _r) const;
 };
 
 }

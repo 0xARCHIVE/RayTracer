@@ -23,7 +23,7 @@ class ConvexPolygon : public Surface {
 
 		virtual Vec3 getPointOnSurface(double u, double v) const override;
 		virtual std::experimental::optional<Vec3> getNorm(const Vec3 &worldPos) const override;
-		virtual std::experimental::optional<IntersectData> intersectRay(const Ray &r) const;
+		virtual std::unique_ptr<IntersectData> intersectRay(const Ray &r) const;
 
 		void addPlane(std::shared_ptr<Plane> plane);
 		std::vector<std::shared_ptr<Plane>> getPlanes() const;

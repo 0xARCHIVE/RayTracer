@@ -38,7 +38,7 @@ class BoundingBox {
 		void expandToInclude(const std::vector<std::shared_ptr<Entity>>& ents);
 		void copy(const BoundingBox &aabb);
 
-		std::experimental::optional<IntersectData> intersectRay(const Ray &r) const;
+		std::unique_ptr<IntersectData> intersectRay(const Ray &r) const;
 };
 
 }

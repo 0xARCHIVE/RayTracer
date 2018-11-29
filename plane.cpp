@@ -19,15 +19,15 @@ std::experimental::optional<Vec3> Plane::getNorm(const Vec3 &worldPos) const {
 	return std::experimental::nullopt;
 }
 
-std::experimental::optional<IntersectData> Plane::intersectRay(const Ray &r) const {
+std::unique_ptr<IntersectData> Plane::intersectRay(const Ray &r) const {
 	Vec3 hitPos = Vec3(0,0,0);
 	Vec3 point = r.getPos();
 	Vec3 direction = r.getDirection();
 
-	if (isInPlane(point)) { hitPos = point; } else {
+	if (this->isInPlane(point)) { hitPos = point; } else {
 		double numerator = signedDistToPlane(point);
 		double denominator = direction.dot(this->up());
-		if (denominator == 0) { return std::experimental::nullopt; }
+		if (denominator == 0) { return nullptr; }
 
 		double lambda = numerator/denominator;
 		hitPos = point + lambda*direction;
@@ -35,23 +35,23 @@ std::experimental::optional<IntersectData> Plane::intersectRay(const Ray &r) con
 
 	Vec3 dV = hitPos - r.getPos();
 	double dot = dV.dot(r.getDirection());
-	if (dot < 0) { return std::experimental::nullopt; }
+	if (dot < 0) { return nullptr; }
 
 	Vec3 localHitPos = hitPos - this->getPos();
 	double dV_width = std::abs(localHitPos.dot( this->right() ));
 	double dV_height = std::abs(localHitPos.dot( this->forward() ));
 
-	if (dV_width > getWidth()*0.5 + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
-	if (dV_height > getHeight()*0.5 + GLOBAL_SETTING_RAY_PRECISION) { return std::experimental::nullopt; }
+	if (dV_width > getWidth()*0.5 + GLOBAL_SETTING_RAY_PRECISION) { return nullptr; }
+	if (dV_height > getHeight()*0.5 + GLOBAL_SETTING_RAY_PRECISION) { return nullptr; }
 
-	IntersectData intersectData;
-	intersectData.surface = this;
-	intersectData.hitPos = hitPos;
-	intersectData.colorData = getColor(intersectData.hitPos);
-	intersectData.hitNorm = this->up();
-	intersectData.hitDist = dV.length();
+	std::unique_ptr<IntersectData> intersectData = std::make_unique<IntersectData>();
+	intersectData->surface = this;
+	intersectData->hitPos = hitPos;
+	intersectData->colorData = getColor(intersectData->hitPos);
+	intersectData->hitNorm = this->up();
+	intersectData->hitDist = dV.length();
 
-	return std::experimental::optional<IntersectData>(intersectData);
+	return intersectData;
 }
 
 std::vector<Vec3> Plane::getCorners() const {

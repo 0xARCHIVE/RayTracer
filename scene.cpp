@@ -44,7 +44,7 @@ void Scene::recalculateKDtree() {
 	this->kdnode->build(this->getEnts());
 }
 
-std::experimental::optional<IntersectData> Scene::intersectRay(const Ray &r) const {
+std::unique_ptr<IntersectData> Scene::intersectRay(const Ray &r) const {
 	return kdnode->intersectRay(r);
 }
 
