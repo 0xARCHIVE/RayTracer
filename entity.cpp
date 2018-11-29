@@ -97,13 +97,13 @@ void Entity::childrenSnapToParent() {
 	}
 }
 
-Vec3 Entity::getPos() const {
+/*Vec3 Entity::getPos() const {
 	return this->worldPos;
 }
 
 Vec3 Entity::getAng() const {
 	return this->worldQuat.toAngle();
-}
+}*/
 
 Vec3 Entity::getMidPoint() const {
 	if (!this->hasChildren()) { return this->getPos(); }
@@ -116,20 +116,20 @@ Vec3 Entity::getMidPoint() const {
 	return midPoint*(1.0/this->getChildren().size());
 }
 
-Vec3 Entity::up() const {
-	return toWorldOrientation(Vec3(0,0,1));
+/*Vec3 Entity::up() const {
+	return this->toWorldOrientation(Vec3(0,0,1));
 }
 
 Vec3 Entity::forward() const {
-	return toWorldOrientation(Vec3(1,0,0));
+	return this->toWorldOrientation(Vec3(1,0,0));
 }
 
 Vec3 Entity::right() const {
-	return toWorldOrientation(Vec3(0,1,0));
-}
+	return this->toWorldOrientation(Vec3(0,1,0));
+}*/
 
 Vec3 Entity::toWorld(const Vec3 &v) const {
-	return toWorldOrientation(v) + this->getPos();
+	return this->toWorldOrientation(v) + this->getPos();
 }
 
 Vec3 Entity::toWorldOrientation(const Vec3 &v) const {
@@ -177,8 +177,6 @@ void Entity::setParent(Entity * parent) {
 
 	this->localQuat = parent->toLocalOrientation(this->worldQuat);
 	this->localPos = this->getParent()->toLocal(this->getPos());
-
-	// deprecated: could cause issues: https://stackoverflow.com/questions/11711034/stdshared-ptr-of-this
 }
 
 void Entity::addChild(std::shared_ptr<Entity> child) {
@@ -196,7 +194,7 @@ std::experimental::optional<IntersectData> Entity::intersectRay(const Ray &r) co
 	return this->kdnode->intersectRay(r);
 }
 
-bool Entity::canIntersectRays() const {
+/*bool Entity::canIntersectRays() const {
 	return this->fl_canIntersectRays;
 }
 
@@ -206,7 +204,7 @@ bool Entity::canGenerateRays() const {
 
 bool Entity::isVisibile() const {
 	return (this->canIntersectRays() && this->canGenerateRays());
-}
+}*/
 
 void Entity::setIntersectRays(bool b) {
 	this->fl_canIntersectRays = b;

@@ -20,13 +20,13 @@ class Vec3 {
 		Vec3();
 		Vec3(double x, double y, double z);
 
-		double getX() const;
-		double getY() const;
-		double getZ() const;
+		inline double getX() const { return this->x; }
+		inline double getY() const { return this->y; }
+		inline double getZ() const { return this->z; }
 
-		double getInvX() const;
-		double getInvY() const;
-		double getInvZ() const;
+		inline double getInvX() const { return this->invX; }
+		inline double getInvY() const { return this->invY; }
+		inline double getInvZ() const { return this->invZ; }
 
 		void setX(double x);
 		void setY(double y);

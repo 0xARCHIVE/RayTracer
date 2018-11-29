@@ -12,23 +12,15 @@ Vec3::Vec3() {
 	this->setX(0);
 	this->setY(0);
 	this->setZ(0);
-
-	this->invX = 1.0/getX();
-	this->invY = 1.0/getY();
-	this->invZ = 1.0/getZ();
 }
 
 Vec3::Vec3(double x, double y, double z) {
 	this->setX(x);
 	this->setY(y);
 	this->setZ(z);
-
-	this->invX = 1.0/x;
-	this->invY = 1.0/y;
-	this->invZ = 1.0/z;
 }
 
-double Vec3::getX() const {
+/*double Vec3::getX() const {
 	return this->x;
 }
 
@@ -50,18 +42,21 @@ double Vec3::getInvY() const {
 
 double Vec3::getInvZ() const {
 	return this->invZ;
-}
+}*/
 
 void Vec3::setX(double x) {
 	this->x = x;
+	this->invX = 1.0/x;
 }
 
 void Vec3::setY(double y) {
 	this->y = y;
+	this->invY = 1.0/y;
 }
 
 void Vec3::setZ(double z) {
 	this->z = z;
+	this->invZ = 1.0/z;
 }
 
 double Vec3::length() const {
@@ -125,6 +120,8 @@ Vec3 Vec3::directionToAngle() const {
 Vec3 Vec3::randomSpread(double angle) const {
 	// generate a unit vector randomly spread around (this) in a cone defined by angle
 	// https://math.stackexchange.com/a/205589/221755
+	if (angle == 0) { return Vec3(this->getX(),this->getY(),this->getZ()); }
+
 	std::random_device rd;
 	std::minstd_rand gen(rd());
 //	std::mt19937 gen(rd());
@@ -141,8 +138,8 @@ Vec3 Vec3::randomSpread(double angle) const {
 
 	Quat q;
 	q = q.quatBetween(Vec3(0,0,1),(*this));
-
 	v = v.rotate(q);
+
 	return v;
 }
 

@@ -57,13 +57,13 @@ class Entity {
 		void snapToParent();
 		void childrenSnapToParent();
 
-		Vec3 getPos() const;
-		Vec3 getAng() const;
+		inline Vec3 getPos() const { return this->worldPos; }
+		inline Vec3 getAng() const { return this->worldQuat.toAngle(); }
 		virtual Vec3 getMidPoint() const;
 
-		Vec3 up() const;
-		Vec3 forward() const;
-		Vec3 right() const;
+		inline Vec3 up() const { return this->toWorldOrientation(Vec3(0,0,1)); }
+		inline Vec3 forward() const { return this->toWorldOrientation(Vec3(1,0,0)); }
+		inline Vec3 right() const { return this->toWorldOrientation(Vec3(0,1,0)); }
 
 		Vec3 toWorld(const Vec3 &v) const;
 		Vec3 toWorldOrientation(const Vec3 &v) const;
@@ -81,9 +81,9 @@ class Entity {
 		void addChild(std::shared_ptr<Entity> child);
 
 		virtual std::experimental::optional<IntersectData> intersectRay(const Ray &r) const;
-		bool canIntersectRays() const;
-		bool canGenerateRays() const;
-		bool isVisibile() const;
+		inline bool canIntersectRays() const { return this->fl_canIntersectRays; }
+		inline bool canGenerateRays() const { return this->fl_canGenerateRays; }
+		inline bool isVisibile() const { return (this->fl_canIntersectRays && this->fl_canGenerateRays); }
 		void setIntersectRays(bool b);
 		void setGenerateRays(bool b);
 		void setVisible(bool b);

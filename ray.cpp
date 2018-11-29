@@ -26,7 +26,7 @@ Ray::Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_lef
 	this->color = color;
 }
 
-Vec3 Ray::getPos() const {
+/*Vec3 Ray::getPos() const {
 	return this->worldPos;
 }
 
@@ -34,9 +34,9 @@ Vec3 Ray::getDirection() const {
 	return this->worldDir;
 }
 
-int Ray::lifeLeft() {
+int Ray::lifeLeft() const {
 	return this->life_left;
-}
+}*/
 
 Vec3 Ray::computeResult() {
 	if (this->scene == nullptr) { return Vec3(0,0,0); }

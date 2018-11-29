@@ -48,7 +48,7 @@ Quat::Quat(const Vec3 &_ang) {
 	setK(q.getK());
 }
 
-double Quat::getR() const {
+/*double Quat::getR() const {
 	return this->r;
 }
 
@@ -62,7 +62,7 @@ double Quat::getJ() const {
 
 double Quat::getK() const {
 	return this->k;
-}
+}*/
 
 void Quat::setR(double _r) {
 	this->r = _r;

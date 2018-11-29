@@ -19,11 +19,10 @@ class Quat {
 		Quat(const Vec3 &axis, double ang);
 		Quat(const Vec3 &ang);
 
-		double getReal() const;
-		double getR() const;
-		double getI() const;
-		double getJ() const;
-		double getK() const;
+		inline double getR() const { return this->r; }
+		inline double getI() const { return this->i; }
+		inline double getJ() const { return this->j; }
+		inline double getK() const { return this->k; }
 
 		void setR(double r);
 		void setI(double i);

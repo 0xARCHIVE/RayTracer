@@ -100,11 +100,7 @@ double Plane::distToPlane(const Vec3 &worldPos) const {
 }
 
 double Plane::signedDistToPlane(const Vec3 &worldPos) const {
-	// not sure if this is source of the issue
-//	std::cout << worldPos << " " << (this->getPos() - worldPos) << " " << this->toLocal(worldPos) << " " << this->up() << std::endl;
-	//std::cout << this->getPos() << " " << worldPos << " " << this->up() << " " << (this->getPos() - worldPos).dot(this->up()) << std::endl;
 	return (this->getPos() - worldPos).dot(this->up());
-//	return this->toLocal(worldPos).dot(Vec3(0,0,-1));
 }
 
 }

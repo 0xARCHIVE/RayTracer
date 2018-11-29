@@ -25,9 +25,9 @@ class Ray {
 		Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left);
 		Ray(Scene * scene, const Vec3 &worldPos, const Vec3 &worldDir, int life_left, ColorData color);
 
-		Vec3 getPos() const;
-		Vec3 getDirection() const;
-		int lifeLeft();
+		inline Vec3 getPos() const { return this->worldPos; }
+		inline Vec3 getDirection() const { return this->worldDir; }
+		inline int lifeLeft() const { return this->life_left; }
 
 		Vec3 computeResult();
 };

@@ -66,7 +66,7 @@ void KDNode::build(const std::vector<std::shared_ptr<Entity>> ents) {
 
 	Vec3 midpoint(0,0,0);
 	for (auto ent : ents) {
-		midpoint += (1.0/ents.size())*ent->getMidPoint();
+		midpoint += ent->getMidPoint();
 	}
 	midpoint*=(1.0/ents.size());
 
